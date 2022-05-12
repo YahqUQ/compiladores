@@ -5,6 +5,7 @@ import co.edu.uniquindio.compiladores.modelo.lexico.Token
 import co.edu.uniquindio.compiladores.modelo.lexico.Error
 
 import kotlin.collections.ArrayList
+import kotlin.math.exp
 
 /*
  * @author: Jaime Nieto, Yiran Hernandez, Mauricio Duque
@@ -577,6 +578,53 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         return null
     }
 
+    /*
+   <Asignación de Variable> ::=  Identificador “:” ( <Expresión> | <Invocación de Función> | Identificador) “|”
+    */
+    private fun esAsignacion(): Sentencia? {
+
+        if(tokenActual.categoria==Categoria.IDENTIFICADOR){
+            val nombre= tokenActual.lexema
+            obtenerSgteToken()
+            if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION){
+                obtenerSgteToken()
+                val expresion= esExpresion()
+                if(expresion !=null){
+                    obtenerSgteToken()
+                    if(tokenActual.categoria==Categoria.TERMINAL){
+                        println("Asignacion EXITOSA")
+                        return Asignacion(nombre,expresion)
+                    }else{
+                        reportarError("Se esperaba fin de sentencia '|'")
+                    }
+                }else{
+                    val invocacionDeFuncion = esInvocacionDeFuncion()
+                    if(invocacionDeFuncion!=null){
+                        obtenerSgteToken()
+                        if(tokenActual.categoria==Categoria.TERMINAL){
+                            return Asignacion(nombre, invocacionDeFuncion)
+                        }else{
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    } else {
+                        if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+                            val nombreAsig= tokenActual.lexema
+                            obtenerSgteToken()
+                            if(tokenActual.categoria==Categoria.TERMINAL){
+                                return Asignacion(nombre,nombreAsig)
+                            }else{
+                                reportarError("Se esperaba fin de sentencia '|'")
+                            }
+                        }
+                    }
+                }
+            }else{
+                reportarError("Se esperaba ':'")
+            }
+        }
+        return null
+    }
+
 
     private fun esExpresionLogica(): ExpresionLogica? {
 
@@ -591,7 +639,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
     }
 
-    private fun esInvocacionDeFuncion(): Sentencia? {
+    private fun esInvocacionDeFuncion(): InvocacionFuncion? {
 
     }
 
@@ -608,9 +656,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
     }
 
-    private fun esAsignacion(): Sentencia? {
 
-    }
 
 
 
