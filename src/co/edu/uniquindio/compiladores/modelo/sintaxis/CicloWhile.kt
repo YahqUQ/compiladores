@@ -1,6 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-class While : Sentencia {
+class CicloWhile : Sentencia {
 
     override var sentencia: Sentencia
 

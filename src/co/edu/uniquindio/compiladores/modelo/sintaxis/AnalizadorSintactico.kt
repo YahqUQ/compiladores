@@ -3,9 +3,9 @@ package co.edu.uniquindio.compiladores.modelo.sintaxis
 import co.edu.uniquindio.compiladores.modelo.lexico.Categoria
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
 import co.edu.uniquindio.compiladores.modelo.lexico.Error
+import javax.smartcardio.CardTerminal
 
 import kotlin.collections.ArrayList
-import kotlin.math.exp
 
 /*
  * @author: Jaime Nieto, Yiran Hernandez, Mauricio Duque
@@ -126,7 +126,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     /*
     <Declaración-Asignación> ::=  [CONST ]  Identificador “;” <Tipo de Dato> “:” <Expresión> “|”
      */
-    private fun esDeclaracionAsignacion(): DeclaracionAsignacion? {
+    private fun esDeclaracionAsignacion(): DeclaracionAsignacionVariable? {
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "CONST") {
             val tipoVariable = "INMUTABLE"
             obtenerSgteToken()
@@ -143,7 +143,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 obtenerSgteToken()
                                 if(tokenActual.categoria==Categoria.TERMINAL){
                                     println("Declaracion Asignacion exitosa")
-                                    return DeclaracionAsignacion( nombre, tipoVariable, tipoDato, Expresion())
+                                    return DeclaracionAsignacionVariable( nombre, tipoVariable, tipoDato, Expresion())
                                 }else{
                                     reportarError("Se esperaba fin de sentencia '|'")
                                 }
@@ -175,7 +175,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             obtenerSgteToken()
                             if(tokenActual.categoria==Categoria.TERMINAL){
                                 println("Declaracion Asignacion exitosa")
-                                return DeclaracionAsignacion( nombre, tipoVariable, tipoDato, Expresion())
+                                return DeclaracionAsignacionVariable( nombre, tipoVariable, tipoDato, Expresion())
                             }else{
                                 reportarError("Se esperaba fin de sentencia")
                             }
@@ -431,7 +431,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             obtenerSgteToken()
             if(tokenActual.categoria==Categoria.PARENTESIS_IZQ){
                 obtenerSgteToken()
-                var condicion=esExpresionLogica()
+                val condicion=esExpresionLogica()
                 if(condicion!=null){
                     obtenerSgteToken()
                     if(tokenActual.categoria==Categoria.PARENTESIS_DER){
@@ -453,10 +453,12 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                                 if(tokenActual.categoria==Categoria.LLAVE_DER) {
                                                     println("IF EXITOSO")
                                                     return Decision(condicion, listaSentenciasIF, listaSentenciasElSE)
+                                                }else{
+                                                    reportarError("Se esperaba")
                                                 }
                                             }
                                         }else{
-
+                                            reportarError("Se esperaba {")
                                         }
                                     }else{
                                         println("IF EXITOSO")
@@ -502,7 +504,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 obtenerSgteToken()
                                 if(tokenActual.categoria==Categoria.LLAVE_DER){
                                     println("WHILE EXITOSO")
-                                    return While(condicion,listaSentencia)
+                                    return CicloWhile(condicion,listaSentencia)
                                 }else{
                                     reportarError("Se esperaba '}'")
                                 }
@@ -536,8 +538,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     if (esTipoDato() != null) {
                         val tipoDato = esTipoDato()
                                 if(tokenActual.categoria==Categoria.TERMINAL){
-                                    println("Declaracion Asignacion exitosa")
-                                    return DeclaracionAsignacion( nombre, tipoVariable, tipoDato, Expresion())
+                                    println("Declaracion Aexitosa")
+                                    return DeclaracionVariable( nombre, tipoVariable, tipoDato)
                                 }else{
                                     reportarError("Se esperaba fin de sentencia '|'")
                                 }
@@ -560,8 +562,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     val tipoDato = esTipoDato()
                     obtenerSgteToken()
                     if(tokenActual.categoria==Categoria.TERMINAL){
-                        println("Declaracion Asignacion exitosa")
-                        return DeclaracionAsignacion( nombre, tipoVariable, tipoDato, Expresion())
+                        println("Declaracion  exitosa")
+                        return DeclaracionVariable( nombre, tipoVariable, tipoDato)
                     }else {
                         reportarError("Se esperaba fin de sentencia")
                     }
@@ -615,6 +617,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             }else{
                                 reportarError("Se esperaba fin de sentencia '|'")
                             }
+                        }else{
+                            reportarError("Se esperaba un identificador o una invocación de función o una expresión")
                         }
                     }
                 }
@@ -625,6 +629,75 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         return null
     }
 
+    /*
+    <Impresión> ::= PRINT “(“  <Expresión Cadena>  “)” “|”
+    */
+    private fun esImpresion(): Sentencia? {
+        if(tokenActual.categoria==Categoria.PALABRA_RESERVADA&&tokenActual.lexema=="PRINT"){
+            obtenerSgteToken()
+            if(tokenActual.categoria==Categoria.PARENTESIS_IZQ){
+                obtenerSgteToken()
+                val expresionCadena=esExpresionCadena()
+                if(expresionCadena!=null) {
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.TERMINAL) {
+                            print("Impresion EXITOSA")
+
+                            return Impresion(expresionCadena)
+                        } else {
+                            reportarError("Se esperaba un fin de sentencia '|'")
+                        }
+                    } else {
+                        reportarError("Se esperaba un ')'")
+                    }
+                }
+            }else {
+                reportarError("Se esperaba un '('")
+            }
+        }
+        return null
+    }
+
+    /*
+    <Retorno> ::= RETURN ( Identificador | <Expresión> ) “|”
+     */
+    private fun esRetorno(): Sentencia? {
+
+        if(tokenActual.categoria==Categoria.PALABRA_RESERVADA&&tokenActual.lexema=="RETURN"){
+            obtenerSgteToken()
+            if(tokenActual.categoria==Categoria.PARENTESIS_IZQ){
+                obtenerSgteToken()
+                if(tokenActual.categoria==Categoria.IDENTIFICADOR){
+                    val identificadorRetorno=tokenActual.lexema
+                    obtenerSgteToken()
+                    if(tokenActual.categoria==Categoria.PARENTESIS_DER){
+                        obtenerSgteToken()
+                        if(tokenActual.categoria==Categoria.TERMINAL){
+                            println("RETORNO EXITOSO")
+                            return Retorno(identificadorRetorno)
+                        }else{
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    }else{
+                        reportarError("Se esperaba ')'")
+                    }
+                }else{
+                    val expresionRetornada= esExpresion()
+                    if(expresionRetornada!=null){
+                        println("RETORNO EXITOSO")
+                        return Retorno(expresionRetornada)
+                    }else{
+                        reportarError("No es un identificador o una expresion válida")
+                    }
+                }
+            }else{
+                reportarError("Se esperaba')")
+            }
+        }
+        return null
+    }
 
     private fun esExpresionLogica(): ExpresionLogica? {
 
@@ -647,18 +720,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
     }
 
-    private fun esRetorno(): Sentencia? {
-
-    }
-
-
-    private fun esImpresion(): Sentencia? {
-
-    }
-
-
-
-
 
 
     private fun esExpresion(): Expresion? {
@@ -668,3 +729,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
 
 }
+
+    private fun esExpresionCadena(): ExpresionCadena? {
+
+    }
+

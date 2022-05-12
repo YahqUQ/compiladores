@@ -30,17 +30,11 @@ class AnalizadorLexico(var codigoFuente: String) {
         "true",
         "false",
         "GLOBAL",
-        "cast",
-        "String",
-        "Double",
-        "Float",
-        "Boolean",
-        "Int",
-        "Char",
-        "Switch",
-        "while",
-        "class",
-        "enum"
+        "IF",
+        "WHILE",
+        "PRINT",
+        "RETURN"
+
     )
 
     /*

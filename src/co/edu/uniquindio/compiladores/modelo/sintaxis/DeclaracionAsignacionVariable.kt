@@ -1,6 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-class DeclaracionAsignacion : Sentencia{
+class DeclaracionAsignacionVariable : Sentencia{
 
     override var sentencia: Sentencia
 
