@@ -699,6 +699,128 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         return null
     }
 
+    /*
+    <Lectura> ::= READ “(“ Cadena de Caracteres “)” “|”
+     */
+    private fun esLectura(): Lectura? {
+
+        if(tokenActual.categoria==Categoria.PALABRA_RESERVADA&&tokenActual.lexema=="PRINT"){
+            obtenerSgteToken()
+            if(tokenActual.categoria==Categoria.PARENTESIS_IZQ){
+                obtenerSgteToken()
+                if(tokenActual.categoria==Categoria.CADENA_CARACTERES) {
+                    val cadenaCaracteresLeida=tokenActual.lexema
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.TERMINAL) {
+                            print("LECTURA EXITOSA")
+
+                            return Lectura(cadenaCaracteresLeida)
+                        } else {
+                            reportarError("Se esperaba un fin de sentencia '|'")
+                        }
+                    } else {
+                        reportarError("Se esperaba un ')'")
+                    }
+                }
+            }else {
+                reportarError("Se esperaba un '('")
+            }
+        }
+        return null
+    }
+
+    /*
+    <Invocación de Función> ::= Identificador “(“ <Lista Argumentos> “)” “|”
+     */
+    private fun esInvocacionDeFuncion(): InvocacionFuncion? {
+        if(tokenActual.categoria==Categoria.IDENTIFICADOR){
+            val nombreFuncion= tokenActual.lexema
+            obtenerSgteToken()
+            if(tokenActual.categoria==Categoria.PARENTESIS_IZQ) {
+                obtenerSgteToken()
+                val listaArgumentos= esListaArgumentos()
+                if(listaArgumentos!=null){
+                    obtenerSgteToken()
+                    if(tokenActual.categoria==Categoria.PARENTESIS_DER){
+                        obtenerSgteToken()
+                        if(tokenActual.categoria==Categoria.TERMINAL){
+                            println("INVOCACION FUNCION EXITOSA")
+                            return InvocacionFuncion(nombreFuncion,listaArgumentos)
+
+                        }else{
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    }else{
+                        reportarError("Se esperaba ')'")
+                    }
+                }
+            }else{
+                reportarError("Se esperaba '('")
+            }
+
+
+        }
+        return null
+    }
+
+    /*
+    <Lista Argumentos> ::= <Argumento> [“_” <Lista Argumentos> ]
+     */
+    private fun esListaArgumentos(): ArrayList<Argumento>? {
+        val listaArgumento = ArrayList<Argumento>()
+        var argumento: Argumento? = esArgumento()
+
+        while (argumento != null) {
+            if (listaArgumento.size >= 1) {
+                obtenerSgteToken()
+                if (tokenActual.categoria == Categoria.SEPARADOR) {
+                    obtenerSgteToken()
+                    listaArgumento.add(argumento)
+
+                    if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
+                        break
+                    }
+                    argumento = esArgumento()
+                } else {
+                    reportarError("Falta Separador '_' entre parametros")
+                    return null
+                }
+            } else {
+                obtenerSgteToken()
+                listaArgumento.add(argumento)
+
+                if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
+                    break
+                }
+                argumento= esArgumento()
+            }
+
+        }
+        return listaArgumento
+    }
+
+    /*
+    <Argumento> ::= Identificador | <Expresión>
+     */
+    private fun esArgumento(): Argumento? {
+        val expresion= esExpresion()
+        if( expresion!=null){
+            println("Argumento EXITOSO")
+            return Argumento(expresion)
+        }else{
+
+            if(tokenActual.categoria==Categoria.IDENTIFICADOR){
+                println("Argumento EXITOSO")
+               return Argumento(tokenActual.lexema)
+            }else{
+                reportarError("Se esperaba un identificador o una expresion como argumento")
+            }
+        }
+        return null
+    }
+
     private fun esExpresionLogica(): ExpresionLogica? {
 
         return null
@@ -711,15 +833,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     private fun esDeclaracionArray(): Sentencia? {
 
     }
-
-    private fun esInvocacionDeFuncion(): InvocacionFuncion? {
-
-    }
-
-    private fun esLectura(): Sentencia? {
-
-    }
-
 
 
     private fun esExpresion(): Expresion? {

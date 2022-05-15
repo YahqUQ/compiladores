@@ -1,6 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-class InvocacionFuncion : Sentencia {
+class Lectura : Sentencia {
 
     override var sentencia: Sentencia
 
@@ -9,6 +9,6 @@ class InvocacionFuncion : Sentencia {
 
     }
 
-    constructor(nombre:String,listaArgumentos:ArrayList<Argumento>)
+    constructor( cadenaCaracteres :String)
 
 }
