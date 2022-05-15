@@ -15,6 +15,11 @@ class AnalizadorLexico(var codigoFuente: String) {
     var columnaActual = 0
     var listaPalabrasReservadas = listOf(
         "FUNCTION",
+        "NUMBER_Zs^",
+        "NUMBER_Fs^",
+        "CHARs^",
+        "STRINGs^",
+        "BOOLEANs^",
         "NUMBER_Zs",
         "NUMBER_Fs",
         "CHARs",

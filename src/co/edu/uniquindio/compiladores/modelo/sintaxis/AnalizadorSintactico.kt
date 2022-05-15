@@ -3,7 +3,7 @@ package co.edu.uniquindio.compiladores.modelo.sintaxis
 import co.edu.uniquindio.compiladores.modelo.lexico.Categoria
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
 import co.edu.uniquindio.compiladores.modelo.lexico.Error
-import javax.smartcardio.CardTerminal
+
 
 import kotlin.collections.ArrayList
 
@@ -353,6 +353,19 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     }
 
     /*
+   <Tipo de Dato> ::=  CHARs^ | NUMBER_Zs^ | NUMBER_Fs^ | STRINGs^ | BOOLEANs^
+    */
+    private fun esTipoArrayB(): TipoArrayB? {
+        return if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && (tokenActual.lexema == "CHARs^"
+                    || tokenActual.lexema == "NUMBER_Fs^" || tokenActual.lexema == "NUMBER_Zs^"
+                    || tokenActual.lexema == "BOOLEANs^" || tokenActual.lexema == "STRINGs^")) {
+            TipoArrayB(tokenActual)
+        } else {
+            null
+        }
+    }
+
+    /*
     <Lista Sentencias> ::= <Sentencia> [ Lista Sentencias]
      */
     private fun esListaSentencias(): ArrayList<Sentencia>? {
@@ -419,6 +432,16 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         if(s!=null){
             return s
         }
+
+        s=esDeclaracionArrayB()
+        if(s!=null){
+            return s
+        }
+        s=esAsignacionArrayB()
+        if(s!=null){
+            return s
+        }
+
         return null
     }
 
@@ -537,8 +560,9 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     obtenerSgteToken()
                     if (esTipoDato() != null) {
                         val tipoDato = esTipoDato()
+
                                 if(tokenActual.categoria==Categoria.TERMINAL){
-                                    println("Declaracion Aexitosa")
+                                    println("Declaracion exitosa")
                                     return DeclaracionVariable( nombre, tipoVariable, tipoDato)
                                 }else{
                                     reportarError("Se esperaba fin de sentencia '|'")
@@ -813,7 +837,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
             if(tokenActual.categoria==Categoria.IDENTIFICADOR){
                 println("Argumento EXITOSO")
-               return Argumento(tokenActual.lexema)
+                return Argumento(tokenActual.lexema)
             }else{
                 reportarError("Se esperaba un identificador o una expresion como argumento")
             }
@@ -835,15 +859,69 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     }
 
 
+
     private fun esExpresion(): Expresion? {
 
         return Expresion()
     }
 
 
-}
+
 
     private fun esExpresionCadena(): ExpresionCadena? {
 
     }
+    private fun esAsignacionArrayB(): Sentencia? {
 
+    }
+
+    private fun esDeclaracionArrayB(): Sentencia? {
+        var tipoVariable = ""
+        var nombre = ""
+        if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "CONST") {
+            tipoVariable = "INMUTABLE"
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+                nombre = tokenActual.lexema
+                obtenerSgteToken()
+                if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
+                    obtenerSgteToken()
+                    val tipoDato = esTipoArrayB()
+                    if (tipoDato != null) {
+                        if(tokenActual.categoria==Categoria.TERMINAL){
+                            println("Declaracion tipoArrayB exitosa")
+                            return DeclaracionAsignacionArrayB( nombre, tipoVariable, tipoDato, Expresion())
+                        }else{
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    } else {
+                        reportarError("Falta tipo Dato o Array de variable")
+                    }
+                } else {
+                    reportarError("Se esperaba ';'")
+                }
+            }
+        } else if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+            tipoVariable = "MUTABLE"
+            nombre = tokenActual.lexema
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
+                obtenerSgteToken()
+                val tipoDato = esTipoArrayB()
+                if (tipoDato != null) {
+                    if(tokenActual.categoria==Categoria.TERMINAL){
+                        println("Declaracion tipoArrayB exitosa")
+                        return DeclaracionAsignacionArrayB( nombre, tipoVariable, tipoDato, Expresion())
+                    }else{
+                        reportarError("Se esperaba fin de sentencia '|'")
+                    }
+                } else {
+                    reportarError("Falta tipo Dato o Array de variable")
+                }
+            } else {
+                reportarError("Se esperaba ';'")
+            }
+        }
+    }
+
+}
