@@ -76,3 +76,10 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 	READ(°°HOLA°°)|
 	
 }
+
+//Decremento e Incremento
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#a DEC|
+	#b INC|
+}
