@@ -352,6 +352,18 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         }
     }
 
+    private fun esElementoArray():  ElementoArray? {
+        return if (tokenActual.categoria == Categoria.CADENA_CARACTERES ||
+                tokenActual.categoria == Categoria.CARACTER || tokenActual.categoria == Categoria.DECIMAL ||
+                tokenActual.categoria == Categoria.ENTERO ||
+            (tokenActual.categoria == Categoria.PALABRA_RESERVADA && (tokenActual.lexema == "TRUE" ||
+                tokenActual.lexema == "FALSE"))) {
+            ElementoArray(tokenActual.lexema)
+        } else {
+            null
+        }
+    }
+
     /*
    <Tipo de Dato> ::=  CHARs^ | NUMBER_Zs^ | NUMBER_Fs^ | STRINGs^ | BOOLEANs^
     */
@@ -428,7 +440,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         if(s!=null){
             return s
         }
-        s=esAsignacionArray()
+        s=esInicializacionArray()
         if(s!=null){
             return s
         }
@@ -437,7 +449,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         if(s!=null){
             return s
         }
-        s=esAsignacionArrayB()
+        s=esInicializacionArrayB()
         if(s!=null){
             return s
         }
@@ -850,12 +862,87 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         return null
     }
 
-    private fun esAsignacionArray(): Sentencia? {
-
+    private fun esInicializacionArray(): InicializacionArray {
+        var nombre = ""
+        if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+            nombre = tokenActual.lexema
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.OPERADOR_ASIGNACION) {
+                obtenerSgteToken()
+                if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+                    var nombreAsig = tokenActual.lexema
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.TERMINAL) {
+                        println("Inicialización TipoArray exitosa")
+                        return InicializacionArray(nombre, nombreAsig)
+                    } else {
+                        reportarError("Se esperaba fin de sentencia '|'")
+                    }
+                } else {
+                    var invocacionFuncion = esInvocacionDeFuncion()
+                    if (invocacionFuncion != null) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.TERMINAL) {
+                            return InicializacionArray(nombre, invocacionFuncion)
+                        } else {
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    } else if (tokenActual.categoria == Categoria.CORCHETE_IZQ) {
+                        obtenerSgteToken()
+                        var elementosArray = sonElementosArray()
+                        if (tokenActual.categoria == Categoria.CORCHETE_DER) {
+                            obtenerSgteToken()
+                            if (tokenActual.categoria == Categoria.TERMINAL) {
+                                println("Inicialización TipoArray exitosa")
+                                return InicializacionArray(nombre, elementosArray)
+                            } else {
+                                reportarError("Se esperaba fin de sentencia '|'")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private fun esDeclaracionArray(): Sentencia? {
-
+    private fun esDeclaracionArray(): DeclaracionArray {
+        var tipoVariable = ""
+        var nombre = ""
+        if (tokenActual.categoria == Categoria.PALABRA_RESERVADA &&
+                tokenActual.lexema == "CONST") {
+            tipoVariable = "INMUTABLE"
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+                nombre = tokenActual.lexema
+                obtenerSgteToken()
+                if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
+                    obtenerSgteToken()
+                    var tipoDato = esTipoArray()
+                    if (tipoDato != null) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.TERMINAL) {
+                            println("Declaracion TipoArray exitosa")
+                            return DeclaracionArray(nombre, tipoVariable, tipoDato)
+                        }
+                    }
+                }
+            }
+        } else if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+            tipoVariable = "MUTABLE"
+            nombre = tokenActual.lexema
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
+                obtenerSgteToken()
+                val tipoDato = esTipoArray()
+                if (tipoDato != null) {
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.TERMINAL) {
+                        println("Declaracion tipoArray exitosa")
+                        return DeclaracionArray(nombre, tipoVariable, tipoDato)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -871,8 +958,84 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     private fun esExpresionCadena(): ExpresionCadena? {
 
     }
-    private fun esAsignacionArrayB(): Sentencia? {
 
+    private fun sonElementosArray(): MutableList<ElementoArray> {
+        var elementosArray: MutableList<ElementoArray> = ArrayList<ElementoArray>()
+        var elem: ElementoArray? = esElementoArray()
+        while (elem != null) {
+            elementosArray.add(elem)
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.SEPARADOR) {
+                obtenerSgteToken()
+                elem = esElementoArray()
+            } else if (tokenActual.categoria == Categoria.CORCHETE_DER) {
+                break
+            }
+        }
+        return elementosArray
+    }
+
+    private fun sonElementosArrayB(): MutableList<MutableList<ElementoArray>> {
+        var elementosArray: MutableList<MutableList<ElementoArray>> = ArrayList<MutableList<ElementoArray>>()
+        var elems: MutableList<ElementoArray> = sonElementosArray()
+        while (elems != null) {
+            elementosArray.add(elems)
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.SEPARADOR) {
+                obtenerSgteToken()
+                elems = sonElementosArray()
+            } else {
+                break
+            }
+        }
+        return elementosArray
+    }
+    private fun esInicializacionArrayB(): InicializacionArrayB {
+        var nombre = ""
+        if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+            nombre = tokenActual.lexema
+            obtenerSgteToken()
+            if (tokenActual.categoria == Categoria.OPERADOR_ASIGNACION) {
+                obtenerSgteToken()
+                if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
+                    var nombreAsig = tokenActual.lexema
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.TERMINAL) {
+                        println("Inicialización tipoArrayB exitosa")
+                        return InicializacionArrayB(nombre, nombreAsig)
+                    } else {
+                        reportarError("Se esperaba fin de sentencia '|'")
+                    }
+                } else {
+                    var invocacionFuncion = esInvocacionDeFuncion()
+                    if (invocacionFuncion != null) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.TERMINAL) {
+                            return InicializacionArrayB(nombre, invocacionFuncion)
+                        } else {
+                            reportarError("Se esperaba fin de sentencia '|'")
+                        }
+                    } else if (tokenActual.categoria == Categoria.CORCHETE_IZQ) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.CORCHETE_IZQ) {
+                            var elementosArrayB = sonElementosArrayB()
+                            if (tokenActual.categoria == Categoria.CORCHETE_DER) {
+                                obtenerSgteToken()
+                                if (tokenActual.categoria == Categoria.TERMINAL) {
+                                    return InicializacionArrayB(nombre, elementosArrayB)
+                                } else {
+                                    reportarError("Se esperaba fin de sentencia '|'")
+                                }
+                            } else {
+                                reportarError("Se esperaba corchete derecho ']'")
+                            }
+                        } else {
+                            reportarError("Se esperaba corchete izquierdo '['")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun esDeclaracionArrayB(): Sentencia? {
@@ -888,9 +1051,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     obtenerSgteToken()
                     val tipoDato = esTipoArrayB()
                     if (tipoDato != null) {
+                        obtenerSgteToken()
                         if(tokenActual.categoria==Categoria.TERMINAL){
                             println("Declaracion tipoArrayB exitosa")
-                            return DeclaracionAsignacionArrayB( nombre, tipoVariable, tipoDato, Expresion())
+                            return DeclaracionArrayB( nombre, tipoVariable, tipoDato)
                         }else{
                             reportarError("Se esperaba fin de sentencia '|'")
                         }
@@ -909,9 +1073,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 obtenerSgteToken()
                 val tipoDato = esTipoArrayB()
                 if (tipoDato != null) {
+                    obtenerSgteToken()
                     if(tokenActual.categoria==Categoria.TERMINAL){
                         println("Declaracion tipoArrayB exitosa")
-                        return DeclaracionAsignacionArrayB( nombre, tipoVariable, tipoDato, Expresion())
+                        return DeclaracionArrayB( nombre, tipoVariable, tipoDato)
                     }else{
                         reportarError("Se esperaba fin de sentencia '|'")
                     }
