@@ -1,13 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-class Asignacion : Sentencia {
-
-    override var sentencia: Sentencia
-
-    init {
-        this.sentencia=this
-
-    }
+class AsignacionVariable : Sentencia {
 
     constructor(identificador:String,identificadorAsignado: String)
     constructor(identificador: String, expresion:Expresion)

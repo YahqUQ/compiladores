@@ -1,5 +1,5 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-class VariableGlobal: Elemento () {
+class Decremento(variable: String) : Sentencia() {
 
 }

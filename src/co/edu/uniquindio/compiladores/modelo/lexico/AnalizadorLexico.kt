@@ -31,14 +31,16 @@ class AnalizadorLexico(var codigoFuente: String) {
         "STRING",
         "BOOLEAN",
         "NONE",
-        "CONS",
-        "true",
-        "false",
+        "CONST",
+        "TRUE",
+        "FALSE",
         "GLOBAL",
         "IF",
+        "ELSE",
         "WHILE",
         "PRINT",
-        "RETURN"
+        "RETURN",
+        "READ"
 
     )
 
@@ -641,6 +643,7 @@ class AnalizadorLexico(var codigoFuente: String) {
                         obtenerSiguienteCaracter()
                     } else {
                         centinela = false
+                        lexema =""
                         pasoAtras(posicionInicial, filaInicial, columnaInicial)
                         break
                     }
@@ -667,14 +670,14 @@ class AnalizadorLexico(var codigoFuente: String) {
         val columnaInicial = columnaActual
         val posicionInicial = posicionActual
 
-        if (caracterActual == 'i') {
+        if (caracterActual == 'I') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual == 'n') {
+            if (caracterActual == 'N') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
 
-                if (caracterActual == 'c') {
+                if (caracterActual == 'C') {
                     lexema += caracterActual
                     obtenerSiguienteCaracter()
 
@@ -701,14 +704,14 @@ class AnalizadorLexico(var codigoFuente: String) {
         val columnaInicial = columnaActual
         val posicionInicial = posicionActual
 
-        if (caracterActual == 'd') {
+        if (caracterActual == 'D') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
-            if (caracterActual == 'e') {
+            if (caracterActual == 'E') {
                 lexema += caracterActual
                 obtenerSiguienteCaracter()
 
-                if (caracterActual == 'c') {
+                if (caracterActual == 'C') {
                     lexema += caracterActual
                     obtenerSiguienteCaracter()
 

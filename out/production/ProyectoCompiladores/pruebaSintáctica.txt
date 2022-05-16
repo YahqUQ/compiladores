@@ -1,0 +1,78 @@
+//FUNCTION
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+}
+
+
+//IF
+FUNCTION #funcion(#param;CHAR);CHAR{
+	IF(#decision1){
+		IF(#decision2){}
+	}ELSE{
+		IF(#decision3){}ELSE{}
+	
+	}
+}
+
+//WHILE
+FUNCTION #funcion(#param;CHAR);CHAR{
+	IF(#decision1){
+		WHILE(#ciclo1){}
+	}ELSE{
+		IF(#desicion2){}ELSE{}
+	
+	}
+}
+
+//DECLARACIÓN-ASIGNACION VARIABLE
+
+FUNCTION #funcion(#param;CHAR_#param2;CHAR);CHAR{
+	
+	CONST #var;STRING: #B |
+	CONST #var;STRING: #B(#A_#C)|
+	
+}
+
+//DECLARACIÓN VARIABLE
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	CONST #var;STRING |
+	
+}
+
+//Asignacion
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#var:#B |
+	#var:#B |
+	#var:#B+#C |
+	
+}
+
+//Impresion
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	PRINT(#a)|
+	PRINT(°°Hola Mundo°°)|
+	PRINT(°°Hola°°+°°Mundo°°)|
+	
+}
+
+//Retorno
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	RETURN(#A)|
+	RETURN(#A+#B)|
+	
+}
+
+//Lectura
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	READ(°°HOLA°°)|
+	
+}

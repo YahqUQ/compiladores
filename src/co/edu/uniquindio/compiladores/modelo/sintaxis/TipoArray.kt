@@ -4,4 +4,6 @@ import co.edu.uniquindio.compiladores.modelo.lexico.Token
 
 class TipoArray(tokenActual: Token) {
 
+
+
 }
