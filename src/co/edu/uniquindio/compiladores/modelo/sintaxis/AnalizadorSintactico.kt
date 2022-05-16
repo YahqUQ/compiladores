@@ -327,6 +327,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
 
 
+
     /*
     <Función> ::= FUNCTION Identificador “(“ [<Lista Parámetros>] “)” “;” (<Tipo de Dato> | NONE)  “{“ [<Lista Sentencias>] “}”
      */
@@ -459,6 +460,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             null
         }
     }
+
 
     /*
    <Tipo de Dato> ::=  CHARs^ | NUMBER_Zs^ | NUMBER_Fs^ | STRINGs^ | BOOLEANs^
