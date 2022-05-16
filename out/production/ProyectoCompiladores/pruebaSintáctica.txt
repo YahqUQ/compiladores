@@ -46,7 +46,7 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 FUNCTION #funcion(#param;CHAR);CHAR{
 	
 	#var:#B |
-	#var:#B |
+	#var:#B(#A+Z5) |
 	#var:#B+#C |
 	
 }
@@ -75,4 +75,19 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 	
 	READ(°°HOLA°°)|
 	
+}
+
+
+//Invocacion de Funcion
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#A(#b_#c_#d_Z5)|
+	
+}
+
+//Decremento e Incremento
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#a DEC|
+	#b INC|
 }

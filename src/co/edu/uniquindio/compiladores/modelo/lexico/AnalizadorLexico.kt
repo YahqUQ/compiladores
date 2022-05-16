@@ -356,7 +356,7 @@ class AnalizadorLexico(var codigoFuente: String) {
         val columnaInicial = columnaActual
         val posicionInicial = posicionActual
 
-        if (caracterActual == 'Y' || caracterActual == 'O') {
+        if (caracterActual == '&' || caracterActual == '?') {
             lexema += caracterActual
             obtenerSiguienteCaracter()
 
