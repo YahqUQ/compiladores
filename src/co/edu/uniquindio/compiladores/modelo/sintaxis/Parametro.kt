@@ -6,4 +6,5 @@ class Parametro {
     constructor(nombre: Token, tipoDato: TipoDato?)
     constructor(nombre: Token, tipoArray: TipoArray?)
 
+    constructor(nombre: Token, tipoArray: TipoArrayB?)
 }
