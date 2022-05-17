@@ -7,7 +7,8 @@ class Parametro {
 
     var nombre: String
     var tipoVar: TipoDato?=null
-    var tipoVar2: TipoArray?=null
+    var tipoVarA: TipoArray?=null
+    var tipoVarB: TipoArrayB?=null
 
     constructor(nombre: Token, tipoDato: TipoDato?){
         this.nombre=nombre.lexema
@@ -18,9 +19,18 @@ class Parametro {
     constructor(nombre: Token, tipoArray: TipoArray?){
         this.nombre=nombre.lexema
         if (tipoArray != null) {
-            this.tipoVar2=tipoArray
+            this.tipoVarA=tipoArray
         }
     }
+
+    constructor(nombre: Token, tipoArray: TipoArrayB?){
+        this.nombre=nombre.lexema
+        if (tipoArray != null) {
+            this.tipoVarB=tipoArray
+        }
+    }
+
+
 
     fun getArbolVisual(): TreeItem<String> {
 
@@ -30,9 +40,9 @@ class Parametro {
                 raiz.children
                     .add(TreeItem(nombre + ":" + tipoVar!!.tipo))
             }else{
-                if(tipoVar2!=null){
+                if(tipoVarA!=null){
                     raiz.children
-                        .add(TreeItem(nombre + ":" + tipoVar2!!.tipo))
+                        .add(TreeItem(nombre + ":" + tipoVarA!!.tipo))
                 }
             }
         }

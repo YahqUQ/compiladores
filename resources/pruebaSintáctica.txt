@@ -41,6 +41,38 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 	
 }
 
+//DECLARACIÓN ARRAY
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+	CONST #var;STRINGs |
+
+}
+
+//DECLARACIÓN ARRAY B
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+	CONST #var;STRINGs^ |
+
+}
+
+//INICIALIZACIÓN ARRAY
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+	#var: [°a°_°b°_°c°]|
+
+}
+
+//INICIALIZACIÓN ARRAY B
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+	#var: [[°a°_°b°_°c°]_[°d°_°e°_°f°]_[°g°_°h°_°i°]]|
+
+}
+
 //Asignacion
 
 FUNCTION #funcion(#param;CHAR);CHAR{
