@@ -97,10 +97,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 elemento = esElemento()
             } else {
                 obtenerSgteToken()
+                listaElementos.add(elemento)
                 if (posicionActual >= listaTokens.size) {
                     break
                 }
-                listaElementos.add(elemento)
                 elemento = esElemento()
             }
         }
@@ -338,7 +338,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     || tokenActual.lexema == "BOOLEAN" || tokenActual.lexema == "STRING")
         ) {
             val tipoDato = tokenActual
-            TipoDato(tipoDato)
+            TipoDato(tipoDato.lexema)
         } else {
             null
         }
@@ -363,8 +363,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             obtenerSgteToken()
                             if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                                 obtenerSgteToken()
-                                val tipoDato = esTipoDato()
+                                var tipoDato = esTipoDato()
                                 if (tokenActual.lexema == "NONE" || tipoDato != null) {
+                                    if(tokenActual.lexema=="NONE"){
+                                        tipoDato=TipoDato("NONE")
+                                    }
                                     obtenerSgteToken()
                                     if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
                                         obtenerSgteToken()
@@ -473,7 +476,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     || tokenActual.lexema == "NUMBER_Fs" || tokenActual.lexema == "NUMBER_Zs"
                     || tokenActual.lexema == "BOOLEANs" || tokenActual.lexema == "STRINGs")
         ) {
-            TipoArray(tokenActual)
+            TipoArray(tokenActual.lexema)
         } else {
             null
         }

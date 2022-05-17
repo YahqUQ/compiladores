@@ -7,6 +7,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TreeView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="539.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="co.edu.uniquindio.compiladores.controladores.InicioController">
@@ -47,5 +48,6 @@
 
             </tabs>
         </TabPane>
+      <TreeView fx:id="arbolSintactico" layoutX="587.0" layoutY="14.0" prefHeight="417.0" prefWidth="200.0" />
     </children>
 </AnchorPane>

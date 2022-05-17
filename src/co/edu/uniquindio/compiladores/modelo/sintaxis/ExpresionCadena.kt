@@ -1,8 +1,34 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import javafx.scene.control.TreeItem
+import sun.reflect.generics.tree.Tree
+
 class ExpresionCadena:Expresion {
 
-    constructor(expresionCadena: String)
-    constructor(expresionCadenaIzq: ExpresionCadena,expresionCadenaDer: ExpresionCadena)
+    lateinit var valor:String
+    lateinit var expresionCadenaDer:ExpresionCadena
+    lateinit var expresionCadenaIzq:ExpresionCadena
+
+    constructor(expresionCadena: String){
+        this.valor=expresionCadena
+    }
+    constructor(expresionCadenaIzq: ExpresionCadena,expresionCadenaDer: ExpresionCadena){
+        this.expresionCadenaIzq=expresionCadenaIzq
+        this.expresionCadenaDer=expresionCadenaDer
+    }
+
+    override fun getArbolVisual(): TreeItem<String> {
+        var raiz= TreeItem("Expresión Cadena")
+
+        if(valor!=null){
+            raiz.children.add(TreeItem("valor: "+valor))
+
+        }else if(expresionCadenaDer!=null&&expresionCadenaIzq!=null){
+            raiz.children.add(expresionCadenaIzq.getArbolVisual())
+            raiz.children.add(expresionCadenaDer.getArbolVisual())
+
+        }
+        return raiz
+    }
 
 }

@@ -1,8 +1,11 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import javafx.scene.control.TreeItem
+
 class ExpresionArtimetica:Expresion {
 
     lateinit var expresionA:String
+    lateinit var expresionArtimetica: ExpresionArtimetica
     lateinit var expresionArtimeticaIzq: ExpresionArtimetica
     lateinit var operadorArtimetico: String
     lateinit var expresionAritmeticaDer: ExpresionArtimetica
@@ -11,7 +14,7 @@ class ExpresionArtimetica:Expresion {
         expresionA=expresionArtimetica
     }
     constructor(expresionArtimetica: ExpresionArtimetica){
-        expresionArtimeticaIzq=expresionArtimetica
+        this.expresionArtimetica=expresionArtimetica
     }
     constructor(expresionArtimeticaIzq: ExpresionArtimetica,operadorArtimetico: String,expresionAritmeticaDer: ExpresionArtimetica){
         this.expresionArtimeticaIzq=expresionArtimeticaIzq
@@ -19,15 +22,20 @@ class ExpresionArtimetica:Expresion {
         this.expresionAritmeticaDer=expresionAritmeticaDer
     }
 
-    override fun toString(): String {
+    override fun getArbolVisual(): TreeItem<String> {
+        var raiz= TreeItem("Expresion Aritmética")
+
         if(expresionA!=null){
-            return "ExpresionArtimetica(expresionA='$expresionA')"
+            raiz.children.add(TreeItem("valor:"+ expresionA))
+        }else if(expresionArtimetica!=null){
+            raiz.children.add(expresionArtimetica.getArbolVisual())
+        }else if(expresionArtimeticaIzq!=null&&expresionAritmeticaDer!=null&&operadorArtimetico!=null){
+            raiz.children.add(expresionArtimeticaIzq.getArbolVisual())
+            raiz.children.add(TreeItem("operador: "+operadorArtimetico))
+            raiz.children.add(expresionAritmeticaDer.getArbolVisual())
         }
 
-        if(expresionArtimeticaIzq!=null&&operadorArtimetico==null){
-            return "ExpresionArtimetica(expresionA='$expresionArtimeticaIzq')"
-        }else{
-            return "ExpresionArtimetica(expresionArtimeticaIzq=$expresionArtimeticaIzq, operadorArtimetico='$operadorArtimetico', expresionAritmeticaDer=$expresionAritmeticaDer)"
-        }
+        return raiz
     }
+
 }

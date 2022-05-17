@@ -8,15 +8,10 @@ import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
 import javafx.fxml.Initializable
-import javafx.scene.control.Alert
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.scene.control.TextArea
-
+import javafx.scene.control.*
 import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
 import java.util.*
-
 
 
 /*
@@ -59,6 +54,9 @@ class InicioController : Initializable {
 
     @FXML lateinit var cErrorColumna: TableColumn<Error,Int>
 
+    @FXML
+    private var arbolSintactico: TreeView<String> = TreeView<String>()
+
 
     override fun initialize(location: URL?, resources: ResourceBundle?)
     {
@@ -71,6 +69,7 @@ class InicioController : Initializable {
         cErrorFila.cellValueFactory= PropertyValueFactory("Fila")
         cErrorColumna.cellValueFactory= PropertyValueFactory("Columna")
 
+        arbolSintactico.cellFactory = null
 
     }
 
@@ -91,7 +90,11 @@ class InicioController : Initializable {
                 tablaErrores.items = FXCollections.observableArrayList(lexico.listaErroresLexicos)
 
                 var sintactico = AnalizadorSintactico(lexico.listaTokens)
-                sintactico.esUnidadDeCompilacion()
+                val uniCompilacion= sintactico.esUnidadDeCompilacion()
+
+                if (uniCompilacion != null) {
+                   arbolSintactico.root = uniCompilacion.getArbolVisual()
+                }
 
                 for(error in sintactico.listaErrores){
                     println(error)

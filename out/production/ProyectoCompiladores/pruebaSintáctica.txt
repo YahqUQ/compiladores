@@ -91,3 +91,35 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 	#a DEC|
 	#b INC|
 }
+
+//Expresion Logica
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#var:#A&#D |
+		
+}
+
+//Expresion Aritmetica
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#var: #A+Z45 |
+		
+}
+
+//Expresion Relacional
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#var:#A>>=Z45 |
+		
+}
+
+//Expresiones Mezcladas
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+	
+	#var: (#A+Z45)>>Z9 |
+		
+}
