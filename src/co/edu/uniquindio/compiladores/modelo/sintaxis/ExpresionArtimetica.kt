@@ -4,11 +4,11 @@ import javafx.scene.control.TreeItem
 
 class ExpresionArtimetica:Expresion {
 
-    lateinit var expresionA:String
-    lateinit var expresionArtimetica: ExpresionArtimetica
-    lateinit var expresionArtimeticaIzq: ExpresionArtimetica
-    lateinit var operadorArtimetico: String
-    lateinit var expresionAritmeticaDer: ExpresionArtimetica
+    var expresionA:String? =null
+    var expresionArtimetica: ExpresionArtimetica? =null
+    var expresionArtimeticaIzq: ExpresionArtimetica?=null
+    var operadorArtimetico: String?=null
+    var expresionAritmeticaDer: ExpresionArtimetica?=null
 
     constructor(expresionArtimetica: String){
         expresionA=expresionArtimetica
@@ -28,11 +28,11 @@ class ExpresionArtimetica:Expresion {
         if(expresionA!=null){
             raiz.children.add(TreeItem("valor:"+ expresionA))
         }else if(expresionArtimetica!=null){
-            raiz.children.add(expresionArtimetica.getArbolVisual())
+            raiz.children.add(expresionArtimetica!!.getArbolVisual())
         }else if(expresionArtimeticaIzq!=null&&expresionAritmeticaDer!=null&&operadorArtimetico!=null){
-            raiz.children.add(expresionArtimeticaIzq.getArbolVisual())
+            raiz.children.add(expresionArtimeticaIzq!!.getArbolVisual())
             raiz.children.add(TreeItem("operador: "+operadorArtimetico))
-            raiz.children.add(expresionAritmeticaDer.getArbolVisual())
+            raiz.children.add(expresionAritmeticaDer!!.getArbolVisual())
         }
 
         return raiz

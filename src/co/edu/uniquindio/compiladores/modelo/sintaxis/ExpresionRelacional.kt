@@ -4,10 +4,10 @@ import javafx.scene.control.TreeItem
 
 class ExpresionRelacional:Expresion {
 
-    lateinit var valor: String
-    lateinit var expresionRelacionalIzq: ExpresionRelacional
-    lateinit var operadorRelacional: String
-    lateinit var expresionDer: Expresion
+    var valor: String?=null
+    var expresionRelacionalIzq: ExpresionRelacional?=null
+    var operadorRelacional: String?=null
+    var expresionDer: Expresion?=null
 
     constructor(expresionRelacional: String){
         this.valor=expresionRelacional
@@ -25,9 +25,9 @@ class ExpresionRelacional:Expresion {
         if(valor!=null){
             raiz.children.add(TreeItem("valor: "+valor))
         }else if(expresionRelacionalIzq!=null&&operadorRelacional!=null&&expresionDer!=null){
-            raiz.children.add(expresionRelacionalIzq.getArbolVisual())
+            raiz.children.add(expresionRelacionalIzq!!.getArbolVisual())
             raiz.children.add(TreeItem("operador"+operadorRelacional))
-            raiz.children.add(expresionDer.getArbolVisual())
+            raiz.children.add(expresionDer!!.getArbolVisual())
         }
 
         return raiz

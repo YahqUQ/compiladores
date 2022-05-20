@@ -6,7 +6,7 @@ class DeclaracionVariable: Sentencia {
 
     var idVariable:String
     var tipoVariable:String
-    lateinit var tipoDato:TipoDato
+    var tipoDato:TipoDato?=null
 
     constructor( nombre: String, tipoVariable: String, tipoDato: TipoDato?){
         this.idVariable=nombre
@@ -20,7 +20,7 @@ class DeclaracionVariable: Sentencia {
         var raiz= TreeItem("Declaración Variable")
 
         if(idVariable!=null&&tipoVariable!=null&&tipoDato!=null){
-            raiz.children.add(TreeItem("nombreVar: "+idVariable+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+tipoDato.tipo))
+            raiz.children.add(TreeItem("nombreVar: "+idVariable+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+ tipoDato!!.tipo))
         }
 
         return raiz

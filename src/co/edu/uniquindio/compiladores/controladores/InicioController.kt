@@ -41,18 +41,31 @@ class InicioController : Initializable {
     @FXML lateinit var Ccolumna : TableColumn<Token,Int>
 
     /*
-       Tabla donde se identifican los errores
+       Tabla donde se identifican los errores léxicos
     */
     @FXML lateinit var tablaErrores: TableView<Error>
 
+    @FXML lateinit var tablaErroresS: TableView<Error>
     /*
-       Cada una de las columnas de la tabla de erroes
+       Cada una de las columnas de la tabla de errores léxicos
     */
     @FXML lateinit var cErrorMsj: TableColumn<Error,String>
 
     @FXML lateinit var cErrorFila: TableColumn<Error,Int>
 
     @FXML lateinit var cErrorColumna: TableColumn<Error,Int>
+
+    /*
+        Cada una de las columnas de la tabla de errores sintácticos
+     */
+    @FXML lateinit var cErrorMsjS: TableColumn<Error,String>
+
+    @FXML lateinit var cErrorFilaS: TableColumn<Error,Int>
+
+    @FXML lateinit var cErrorColumnaS: TableColumn<Error,Int>
+
+
+
 
     @FXML
     private var arbolSintactico: TreeView<String> = TreeView<String>()
@@ -68,6 +81,11 @@ class InicioController : Initializable {
         cErrorMsj.cellValueFactory= PropertyValueFactory("Error")
         cErrorFila.cellValueFactory= PropertyValueFactory("Fila")
         cErrorColumna.cellValueFactory= PropertyValueFactory("Columna")
+
+        cErrorMsjS.cellValueFactory= PropertyValueFactory("Error")
+        cErrorFilaS.cellValueFactory= PropertyValueFactory("Fila")
+        cErrorColumnaS.cellValueFactory= PropertyValueFactory("Columna")
+
 
         arbolSintactico.cellFactory = null
 
@@ -89,16 +107,18 @@ class InicioController : Initializable {
                 tablaTokens.items = FXCollections.observableArrayList(lexico.listaTokens)
                 tablaErrores.items = FXCollections.observableArrayList(lexico.listaErroresLexicos)
 
+
                 var sintactico = AnalizadorSintactico(lexico.listaTokens)
                 val uniCompilacion= sintactico.esUnidadDeCompilacion()
+                tablaErroresS.items= FXCollections.observableArrayList(sintactico.listaErrores)
+
 
                 if (uniCompilacion != null) {
                    arbolSintactico.root = uniCompilacion.getArbolVisual()
+                }else{
+                    arbolSintactico.root= TreeItem("Unidad de Compilación")
                 }
 
-                for(error in sintactico.listaErrores){
-                    println(error)
-                }
 
 
             }catch (exception: Exception){

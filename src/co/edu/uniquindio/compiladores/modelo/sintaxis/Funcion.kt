@@ -36,14 +36,21 @@ class Funcion : Elemento {
 
         val params = TreeItem("Parámetros")
         raiz.children.add(params)
-        for (parametro in listaParametros) {
-            params.children.add(parametro.getArbolVisual())
+
+        if(listaParametros!=null){
+            for (parametro in listaParametros) {
+                params.children.add(parametro.getArbolVisual())
+            }
         }
+
 
         val sentencias = TreeItem("Sentencias")
         raiz.children.add(sentencias)
-        for (sentencia in listaSentencias) {
-            sentencias.children.add(sentencia.getArbolVisual())
+
+        if(listaSentencias!=null) {
+            for (sentencia in listaSentencias) {
+                sentencias.children.add(sentencia.getArbolVisual())
+            }
         }
         return raiz
     }

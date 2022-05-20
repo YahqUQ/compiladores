@@ -79,7 +79,7 @@ FUNCTION #funcion(#param;CHAR);CHAR{
 	
 	#var:#B |
 	#var:#B(#A+Z5) |
-	#var:#B+#C |
+	#var:#B+(#C-F3.0)/Z5 |
 	
 }
 

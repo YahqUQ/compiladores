@@ -48,14 +48,14 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     /*
     Ignora todos los tokens hasta un token de escape
     */
-    private fun ignorarTokensHasta(escape: ArrayList<String>) {
-        while (!(tokenActual.lexema in escape)) {
+    private fun ignorarTokensHasta(vararg escapes: String) : String {
+        while (!(tokenActual.lexema in escapes)) {
             obtenerSgteToken()
-            if (tokenActual.categoria == Categoria.FIN_CODIGO) {
-                reportarError("No tiene sentido este código")
+            if (tokenActual.categoria == Categoria.FIN_CODIGO||posicionActual>=listaTokens.size) {
                 break
             }
         }
+        return tokenActual.lexema
     }
 
     /*
@@ -86,11 +86,9 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         var elemento: Elemento? = esElemento()
 
         while (tokenActual.categoria != Categoria.FIN_CODIGO) {
-            val escapes: ArrayList<String> = ArrayList()
-            escapes.add("FUNCTION")
-            escapes.add("GLOBAL")
+
             if (elemento == null) {
-                ignorarTokensHasta(escapes)
+                obtenerSgteToken()
                 if (posicionActual >= listaTokens.size) {
                     break
                 }
@@ -121,7 +119,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
         e = esVariableGlobal()
         if (e != null) {
-            obtenerSgteToken()
             println("Elemento Exitoso")
             return e
         }
@@ -137,9 +134,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "GLOBAL") {
             obtenerSgteToken()
-            if (esDeclaracionAsignacion() != null) {
+            var declaracionAsignacionVariable=esDeclaracionAsignacion()
+            if (declaracionAsignacionVariable!= null) {
                 println("Variable Global Exitosa")
-                return VariableGlobal()
+                return VariableGlobal(declaracionAsignacionVariable)
             }
         }
         return null
@@ -159,7 +157,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 obtenerSgteToken()
                 if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                     obtenerSgteToken()
-                    if (esTipoDato() != null) {
+                    if (esTipoDato() != null||esTipoArrayB()!=null||esTipoArray()!=null) {
                         val tipoDato = esTipoDato()
                         obtenerSgteToken()
 
@@ -191,6 +189,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                             reportarError("Se esperaba fin de sentencia '|'")
                                         }
                                     }
+                                    ignorarTokensHasta("|")
                                     return null
                                 }
 
@@ -212,6 +211,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                             reportarError("Se esperaba fin de sentencia '|'")
                                         }
                                     }
+                                    ignorarTokensHasta("|")
                                     return null
                                 }
 
@@ -222,22 +222,25 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     reportarError("Se esperaba fin de sentencia '|'")
                                 }
                             } else {
-                                obtenerTokenPosicion(posBack)
-                                reportarError("No es una expresion ni una invocacion de funcion ni una variable")
 
+                                reportarError("No es una expresion ni una invocacion de funcion ni una variable")
+                                ignorarTokensHasta("|")
                             }
                         } else {
                             reportarError("Se esperaba ':'")
+                            ignorarTokensHasta("|")
                         }
                     } else {
-                        obtenerTokenPosicion(posBack)
-                        reportarError("Falta tipo Dato o Array de variable (No es Declaraciónn - asignación de variable)")
+                        reportarError("Falta tipo Dato")
+                        ignorarTokensHasta("|")
                     }
                 } else {
                     reportarError("Se esperaba ';'")
+                    ignorarTokensHasta("|")
                 }
             } else {
                 reportarError("Falta Identificador")
+                ignorarTokensHasta("|")
             }
         }
 
@@ -287,6 +290,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                         reportarError("Se esperaba fin de sentencia '|'")
                                     }
                                 }
+                                ignorarTokensHasta("|")
                                 return null
                             }
 
@@ -303,6 +307,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                         reportarError("Se esperaba fin de sentencia '|'")
                                     }
                                 }
+                                ignorarTokensHasta("|")
                                 return null
                             }
 
@@ -315,18 +320,22 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         } else {
                             obtenerTokenPosicion(posBack)
                             reportarError("No es una expresion ni una invocacion de funcion ni una variable")
-
+                            ignorarTokensHasta("|")
                         }
                     } else {
                         reportarError("Se esperaba ':'")
+                        ignorarTokensHasta("|")
                     }
                 } else {
                     obtenerTokenPosicion(posBack)
                     reportarError("Falta Tipo Dato o Array de variable (No es declaración asignación de variable)")
+                    ignorarTokensHasta("|")
                 }
             } else {
                 reportarError("Se esperaba ';'")
+                ignorarTokensHasta("|")
             }
+            ignorarTokensHasta("|")
         }
         return null
     }
@@ -384,29 +393,164 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                                     tipoDato,
                                                     listaSentencia
                                                 )
+
+                                                //Apartir de aqui captura de errores
                                             } else {
                                                 reportarError("Se esperaba '}' es funcion")
                                             }
+                                        }else {
+                                            var escape = ignorarTokensHasta("}", "FUNCTION", "GLOBAL")
+
+                                            if (escape == "FUNCTION" || escape == "GLOBAL") {
+                                                obtenerTokenPosicion(posicionActual - 1)
+                                                return null
+                                            }
+                                            return null
                                         }
                                     } else {
                                         reportarError("Se esperaba '{'")
                                     }
                                 } else {
                                     reportarError("Tipo de Dato de Retorno Inválido")
+                                    var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                                    if(escape=="FUNCTION"||escape=="GLOBAL"){
+                                        obtenerTokenPosicion(posicionActual-1)
+                                        return null
+                                    }
+
+                                    obtenerSgteToken()
+                                    val listaSentencia = esListaSentencias()
+                                    if (listaSentencia != null) {
+                                        if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                            println("Funcion Errores")
+
+                                        } else {
+                                            reportarError("Se esperaba '}' es funcion")
+                                        }
+                                    }
                                 }
                             } else {
                                 reportarError("Se esperaba ';'")
+                                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                                if(escape=="FUNCTION"||escape=="GLOBAL"){
+                                    obtenerTokenPosicion(posicionActual-1)
+                                    return null
+                                }
+
+                                obtenerSgteToken()
+                                val listaSentencia = esListaSentencias()
+                                if (listaSentencia != null) {
+                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                        println("Funcion Errores")
+
+                                    } else {
+                                        reportarError("Se esperaba '}' es funcion")
+                                    }
+                                }
                             }
                         } else {
                             reportarError("Se esperaba ')'")
+                            var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                            if(escape=="FUNCTION"||escape=="GLOBAL"){
+                                obtenerTokenPosicion(posicionActual-1)
+                                return null
+                            }
+
+                            obtenerSgteToken()
+                            val listaSentencia = esListaSentencias()
+                            if (listaSentencia != null) {
+                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                    println("Funcion Errores")
+
+
+                                } else {
+                                    reportarError("Se esperaba '}' es funcion")
+                                }
+                            }else{
+                                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                                if(escape=="FUNCTION"||escape=="GLOBAL"){
+                                    obtenerTokenPosicion(posicionActual-1)
+                                    return null
+                                }
+
+                                obtenerSgteToken()
+                                val listaSentencia = esListaSentencias()
+                                if (listaSentencia != null) {
+                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                        println("Funcion Errores")
+
+
+                                    } else {
+                                        reportarError("Se esperaba '}' es funcion")
+                                    }
+                                }
+                            }
+                        }
+                    }else{
+                        var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                        if(escape=="FUNCTION"||escape=="GLOBAL"){
+                            obtenerTokenPosicion(posicionActual-1)
+                            return null
+                        }
+
+                        obtenerSgteToken()
+                        val listaSentencia = esListaSentencias()
+                        if (listaSentencia != null) {
+                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                println("Funcion Errores")
+
+
+                            } else {
+                                reportarError("Se esperaba '}' es funcion")
+                            }
                         }
                     }
                 } else {
-                    obtenerTokenPosicion(posBack)
-                    reportarError("Se esperaba '(' esFuncion")
+                    reportarError("Se esperaba '('")
+                    var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                    if(escape=="FUNCTION"||escape=="GLOBAL"){
+                        obtenerTokenPosicion(posicionActual-1)
+                        return null
+                    }
+
+                    obtenerSgteToken()
+                    val listaSentencia = esListaSentencias()
+                    if (listaSentencia != null) {
+                        if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                            println("Funcion Errores")
+
+
+                        } else {
+                            reportarError("Se esperaba '}' es funcion")
+                        }
+                    }
                 }
             } else {
                 reportarError("Falta Identificador")
+                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+
+                if(escape=="FUNCTION"||escape=="GLOBAL"){
+                    obtenerTokenPosicion(posicionActual-1)
+                    return null
+                }
+
+                obtenerSgteToken()
+                val listaSentencia = esListaSentencias()
+                if (listaSentencia != null) {
+                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                        println("Funcion Errores")
+
+
+                    } else {
+                        reportarError("Se esperaba '}' es funcion")
+                    }
+                }
             }
         }
         return null
@@ -417,16 +561,21 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     <Lista Parámetros> ::= <Parámetro> [Separador <Lista Parámetros>]
      */
     private fun esListaParametros(): ArrayList<Parametro>? {
+
         val listaParametro = ArrayList<Parametro>()
+
+        if(tokenActual.categoria==Categoria.PARENTESIS_DER){
+            return listaParametro
+        }
+
         var parametro: Parametro? = esParametro()
 
         while (parametro != null) {
             listaParametro.add(parametro)
-
             obtenerSgteToken()
 
             if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
-                break
+                return listaParametro
             }
 
             if (tokenActual.categoria == Categoria.SEPARADOR) {
@@ -437,7 +586,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             }
             parametro = esParametro()
         }
-        return listaParametro
+
+        return null
 
     }
 
@@ -465,12 +615,15 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     return Parametro(nombre, tipoDato)
                 } else {
                     reportarError("No es un tipo de Dato o Array Válido")
+                    ignorarTokensHasta(")")
                 }
             } else {
                 reportarError("Se esperaba ';")
+                ignorarTokensHasta(")")
             }
-        } else {
-            reportarError("Falta Identificador")
+        }else{
+            reportarError("Falta identificador de parámetro ")
+            ignorarTokensHasta(")")
         }
         return null
     }
@@ -510,18 +663,29 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     private fun esListaSentencias(): ArrayList<Sentencia>? {
 
         val listaSentencia = ArrayList<Sentencia>()
+
+        if(tokenActual.categoria==Categoria.LLAVE_DER){
+            return listaSentencia
+        }
+
         var sentencia: Sentencia? = esSentencia()
 
         while (sentencia != null) {
-            obtenerSgteToken()
             listaSentencia.add(sentencia)
+            obtenerSgteToken()
 
             if (tokenActual.categoria == Categoria.LLAVE_DER) {
-                break
+                return listaSentencia
             }
             sentencia = esSentencia()
         }
-        return listaSentencia
+
+        obtenerSgteToken()
+        if(tokenActual.categoria!=Categoria.FIN_CODIGO){
+            esListaSentencias()
+        }
+
+        return null
     }
 
     /*
@@ -628,6 +792,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 }
             } else {
                 reportarError("No es decremento válido")
+                ignorarTokensHasta("|")
             }
         }
         return null
@@ -658,6 +823,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 }
             } else {
                 reportarError("No es incremento válido")
+                ignorarTokensHasta("|")
             }
         }
         return null
@@ -701,6 +867,14 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                             }
                                         } else {
                                             reportarError("Se esperaba {")
+                                            val listaSentenciasElSE = esListaSentencias()
+                                            if (listaSentenciasElSE != null) {
+                                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                    println("IF con Fallos")
+                                                } else {
+                                                    reportarError("Se esperaba }")
+                                                }
+                                            }
                                         }
                                     } else {
                                         obtenerTokenPosicion(posicionActual - 1)
@@ -708,15 +882,86 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                         return Decision(condicionLogica, listaSentenciasIF)
                                     }
                                 } else {
-                                    reportarError("Se esperaba '} es decicion'")
+                                    reportarError("Se esperaba '} '")
                                 }
                             }
                         } else {
                             reportarError("Se esperaba '{'")
+                            ignorarTokensHasta("{")
+                            obtenerSgteToken()
+                            val listaSentenciasIF = esListaSentencias()
+                            if (listaSentenciasIF != null) {
+                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                    obtenerSgteToken()
+                                    if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                                        obtenerSgteToken()
+                                        if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                            obtenerSgteToken()
+                                            val listaSentenciasElSE = esListaSentencias()
+                                            if (listaSentenciasElSE != null) {
+                                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                    println("IF con Fallos")
+                                                } else {
+                                                    reportarError("Se esperaba }")
+                                                }
+                                            }
+                                        } else {
+                                            reportarError("Se esperaba {")
+                                            val listaSentenciasElSE = esListaSentencias()
+                                            if (listaSentenciasElSE != null) {
+                                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                    println("IF con Fallos")
+                                                } else {
+                                                    reportarError("Se esperaba }")
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        println("IF con fallos")
+                                    }
+                                } else {
+                                    reportarError("Se esperaba '}' ")
+                                }
+                            }
                         }
                     } else {
-                        obtenerTokenPosicion(posBack)
-                        reportarError("Se esperaba '(' esDecision")
+                        reportarError("Se esperaba ')'")
+                        ignorarTokensHasta("{")
+                        obtenerSgteToken()
+                        val listaSentenciasIF = esListaSentencias()
+                        if (listaSentenciasIF != null) {
+                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                obtenerSgteToken()
+                                if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                                    obtenerSgteToken()
+                                    if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                        obtenerSgteToken()
+                                        val listaSentenciasElSE = esListaSentencias()
+                                        if (listaSentenciasElSE != null) {
+                                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                println("IF con Fallos")
+                                            } else {
+                                                reportarError("Se esperaba }")
+                                            }
+                                        }
+                                    } else {
+                                        reportarError("Se esperaba {")
+                                        val listaSentenciasElSE = esListaSentencias()
+                                        if (listaSentenciasElSE != null) {
+                                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                println("IF con Fallos")
+                                            } else {
+                                                reportarError("Se esperaba }")
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    println("IF con fallos")
+                                }
+                            } else {
+                                reportarError("Se esperaba '}' ")
+                            }
+                        }
                     }
                 } else {
                     val condicionRelacional = esExpresionRelacional()
@@ -743,32 +988,185 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                                             listaSentenciasElSE
                                                         )
                                                     } else {
-                                                        reportarError("Se esperaba")
+                                                        reportarError("Se esperaba }")
                                                     }
                                                 }
                                             } else {
                                                 reportarError("Se esperaba {")
+                                                val listaSentenciasElSE = esListaSentencias()
+                                                if (listaSentenciasElSE != null) {
+                                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                        println("IF con Fallos")
+                                                    } else {
+                                                        reportarError("Se esperaba }")
+                                                    }
+                                                }
                                             }
                                         } else {
                                             println("IF Exitoso")
                                             return Decision(condicionRelacional, listaSentenciasIF)
                                         }
                                     } else {
-                                        reportarError("Se esperaba '}' esDecicion")
+                                        reportarError("Se esperaba '}' ")
                                     }
                                 }
                             } else {
                                 reportarError("Se esperaba '{'")
+                                ignorarTokensHasta("{")
+                                obtenerSgteToken()
+                                val listaSentenciasIF = esListaSentencias()
+                                if (listaSentenciasIF != null) {
+                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                        obtenerSgteToken()
+                                        if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                                            obtenerSgteToken()
+                                            if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                                obtenerSgteToken()
+                                                val listaSentenciasElSE = esListaSentencias()
+                                                if (listaSentenciasElSE != null) {
+                                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                        println("IF con Fallos")
+                                                    } else {
+                                                        reportarError("Se esperaba }")
+                                                    }
+                                                }
+                                            } else {
+                                                reportarError("Se esperaba {")
+                                                val listaSentenciasElSE = esListaSentencias()
+                                                if (listaSentenciasElSE != null) {
+                                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                        println("IF con Fallos")
+                                                    } else {
+                                                        reportarError("Se esperaba }")
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            println("IF con fallos")
+                                        }
+                                    } else {
+                                        reportarError("Se esperaba '}' ")
+                                    }
+                                }
                             }
                         } else {
-                            obtenerTokenPosicion(posBack)
-                            reportarError("Se esperaba '(' esDecision 2")
+                            reportarError("Se esperaba ')'")
+                            ignorarTokensHasta("{")
+                            obtenerSgteToken()
+                            val listaSentenciasIF = esListaSentencias()
+                            if (listaSentenciasIF != null) {
+                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                    obtenerSgteToken()
+                                    if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                                        obtenerSgteToken()
+                                        if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                            obtenerSgteToken()
+                                            val listaSentenciasElSE = esListaSentencias()
+                                            if (listaSentenciasElSE != null) {
+                                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                    println("IF con Fallos")
+                                                } else {
+                                                    reportarError("Se esperaba }")
+                                                }
+                                            }
+                                        } else {
+                                            reportarError("Se esperaba {")
+                                            val listaSentenciasElSE = esListaSentencias()
+                                            if (listaSentenciasElSE != null) {
+                                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                    println("IF con Fallos")
+                                                } else {
+                                                    reportarError("Se esperaba }")
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        println("IF con fallos")
+                                    }
+                                } else {
+                                    reportarError("Se esperaba '}' ")
+                                }
+                            }
                         }
                     } else {
-                        obtenerTokenPosicion(posBack)
-                        reportarError("Se esperaba '(' esDecision 3")
+                        reportarError("Condición No válida")
+                        ignorarTokensHasta("{")
+                        obtenerSgteToken()
+                        val listaSentenciasIF = esListaSentencias()
+                        if (listaSentenciasIF != null) {
+                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                obtenerSgteToken()
+                                if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                                    obtenerSgteToken()
+                                    if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                        obtenerSgteToken()
+                                        val listaSentenciasElSE = esListaSentencias()
+                                        if (listaSentenciasElSE != null) {
+                                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                println("IF con Fallos")
+                                            } else {
+                                                reportarError("Se esperaba }")
+                                            }
+                                        }
+                                    } else {
+                                        reportarError("Se esperaba {")
+                                        val listaSentenciasElSE = esListaSentencias()
+                                        if (listaSentenciasElSE != null) {
+                                            if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                                println("IF con Fallos")
+                                            } else {
+                                                reportarError("Se esperaba }")
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    println("IF con fallos")
+                                }
+                            } else {
+                                reportarError("Se esperaba '}' ")
+                            }
+                        }
                     }
                 }
+            }else{
+                reportarError("Se esperaba '('")
+                ignorarTokensHasta("{")
+                obtenerSgteToken()
+                val listaSentenciasIF = esListaSentencias()
+                if (listaSentenciasIF != null) {
+                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                        obtenerSgteToken()
+                        if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "ELSE") {
+                            obtenerSgteToken()
+                            if (tokenActual.categoria == Categoria.LLAVE_IZQ) {
+                                obtenerSgteToken()
+                                val listaSentenciasElSE = esListaSentencias()
+                                if (listaSentenciasElSE != null) {
+                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                        println("IF con Fallos")
+                                    } else {
+                                        reportarError("Se esperaba }")
+                                    }
+                                }
+                            } else {
+                                reportarError("Se esperaba {")
+                                val listaSentenciasElSE = esListaSentencias()
+                                if (listaSentenciasElSE != null) {
+                                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                        println("IF con Fallos")
+                                    } else {
+                                        reportarError("Se esperaba }")
+                                    }
+                                }
+                            }
+                        } else {
+                            println("IF con fallos")
+                        }
+                    } else {
+                        reportarError("Se esperaba '}' ")
+                    }
+                }
+
             }
         }
         return null
@@ -797,11 +1195,21 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     println("WHILE EXITOSO")
                                     return CicloWhile(condicionLogica, listaSentencia)
                                 } else {
-                                    reportarError("Se esperaba '}' esCicloWhie")
+                                    reportarError("Se esperaba '}'")
                                 }
                             }
                         } else {
                             reportarError("Se esperaba '{'")
+                            val listaSentencia = esListaSentencias()
+                            if (listaSentencia != null) {
+                                obtenerSgteToken()
+                                if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                                    println("WHILE con errores")
+
+                                } else {
+                                    reportarError("Se esperaba '}' ")
+                                }
+                            }
                         }
                     } else {
                         reportarError("Se esperaba ')'")
@@ -830,11 +1238,36 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         } else {
                             reportarError("Se esperaba ')'")
                         }
+                    }else{
+                        reportarError("No es expresión lógica o relacional válida")
+                    }
+                }
+                ignorarTokensHasta("{")
+                obtenerSgteToken()
+                val listaSentencia = esListaSentencias()
+                if (listaSentencia != null) {
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                        println("WHILE con errores")
+
+                    } else {
+                        reportarError("Se esperaba '}' ")
                     }
                 }
             } else {
-                obtenerTokenPosicion(posBack)
-                reportarError("Se esperaba '(' esCicloWhile")
+                reportarError("Se esperaba '(' ")
+                ignorarTokensHasta("{")
+                obtenerSgteToken()
+                val listaSentencia = esListaSentencias()
+                if (listaSentencia != null) {
+                    obtenerSgteToken()
+                    if (tokenActual.categoria == Categoria.LLAVE_DER) {
+                        println("WHILE con errores")
+
+                    } else {
+                        reportarError("Se esperaba '}' ")
+                    }
+                }
             }
         }
         return null
@@ -854,6 +1287,12 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
                 if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                     obtenerSgteToken()
+
+                    if(esTipoArrayB()!=null||esTipoArray()!=null){
+                        obtenerTokenPosicion(posBack)
+                        return null
+                    }
+
                     val tipoDato = esTipoDato()
                     if (tipoDato != null) {
                         obtenerSgteToken()
@@ -868,14 +1307,16 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             reportarError("Se esperaba fin de sentencia '|'")
                         }
                     } else {
-                        obtenerTokenPosicion(posBack)
-                        reportarError("Falta tipo Dato variable (No es declaración variable)")
+                        reportarError("Falta tipo Dato")
+                        ignorarTokensHasta("|")
                     }
                 } else {
                     reportarError("Se esperaba ';'")
+                    ignorarTokensHasta("|")
                 }
             } else {
                 reportarError("Falta Identificador")
+                ignorarTokensHasta("|")
             }
         }
 
@@ -910,9 +1351,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     }
                 } else {
                     reportarError("Falta Tipo Dato ")
+                    ignorarTokensHasta("|")
                 }
             } else {
                 reportarError("Se esperaba ';'")
+                ignorarTokensHasta("|")
             }
         }
         return null
@@ -956,7 +1399,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 reportarError("Se esperaba fin de sentencia '|'")
                             }
                         }
-                        return null
                     }
 
                     if (tokenActual.categoria == Categoria.OPERADOR_ARITMETICO || tokenActual.categoria == Categoria.OPERADOR_RELACIONAL
@@ -972,7 +1414,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 reportarError("Se esperaba fin de sentencia '|'")
                             }
                         }
-                        return null
                     }
 
                     if (tokenActual.categoria == Categoria.TERMINAL) {
@@ -989,17 +1430,19 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             return AsignacionVariable(nombre, expresion)
                         }
                     }
-
                 }else{
-                    obtenerTokenPosicion(posBack)
                     reportarError("No es una expresion ni una invocacion de funcion ni una variable")
+                    ignorarTokensHasta("|")
 
                 }
 
             } else {
                 reportarError("Se esperaba ':'")
+                ignorarTokensHasta("|")
             }
+            ignorarTokensHasta("|")
         }
+
         return null
     }
 
@@ -1028,8 +1471,12 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 }
             } else {
                 reportarError("Se esperaba un '('")
+
             }
+
+            ignorarTokensHasta("|")
         }
+
         return null
     }
 
@@ -1068,6 +1515,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             } else {
                 reportarError("Se esperaba')")
             }
+            ignorarTokensHasta("|")
         }
         return null
     }
@@ -1100,6 +1548,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             } else {
                 reportarError("Se esperaba un '('")
             }
+            ignorarTokensHasta("|")
         }
         return null
     }
@@ -1129,12 +1578,12 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     }
                 }
             } else {
-                obtenerTokenPosicion(posBack)
-                reportarError("Se esperaba '(' esInvocacionDeFuncion")
+                reportarError("Se esperaba '(' ")
             }
 
-
+            ignorarTokensHasta("|")
         }
+
         return null
     }
 
@@ -1143,6 +1592,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
      */
     private fun esListaArgumentos(): ArrayList<Argumento>? {
         val listaArgumento = ArrayList<Argumento>()
+
+        if(tokenActual.categoria==Categoria.PARENTESIS_DER){
+            return listaArgumento
+        }
+
         var argumento: Argumento? = esArgumento()
 
         while (argumento != null) {
@@ -1150,7 +1604,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             obtenerSgteToken()
 
             if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
-                break
+                return listaArgumento
             }
 
             if (tokenActual.categoria == Categoria.SEPARADOR) {
@@ -1162,7 +1616,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
             argumento = esArgumento()
         }
-        return listaArgumento
+        return null
     }
 
     /*
@@ -1193,6 +1647,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 }
             }
         }
+
         return null
     }
 
@@ -1641,6 +2096,13 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 obtenerSgteToken()
                 if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                     obtenerSgteToken()
+
+                    if(esTipoArray()!=null||esTipoDato()!=null){
+                        obtenerTokenPosicion(posBack)
+                        return null
+                    }
+
+
                     val tipoDato = esTipoArrayB()
                     if (tipoDato != null) {
                         obtenerSgteToken()
@@ -1652,7 +2114,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         }
                     } else {
                         obtenerTokenPosicion(posBack)
-                        reportarError("Falta tipo Dato o Array de variable (No es TipoArrayB)")
+                        reportarError("Falta Array B de variable")
                     }
                 } else {
                     reportarError("Se esperaba ';'")
@@ -1675,7 +2137,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     }
                 } else {
                     obtenerTokenPosicion(posBack)
-                    reportarError("Falta tipo Dato o Array de variable (No es declaración array b)")
+                    reportarError("Falta tipo Array de variable ")
                 }
             } else {
                 obtenerTokenPosicion(posBack)
@@ -1722,18 +2184,21 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             val elementosArrayB = sonElementosArrayB()
                             if (tokenActual.categoria == Categoria.CORCHETE_DER) {
                                 obtenerSgteToken()
-                                if (tokenActual.categoria == Categoria.TERMINAL) {
-                                    println("Inicialización tipoArrayB exitosa")
-                                    return InicializacionArrayB(nombre, elementosArrayB)
+                                if (tokenActual.categoria == Categoria.CORCHETE_DER) {
+                                    obtenerSgteToken()
+                                    if (tokenActual.categoria == Categoria.TERMINAL) {
+                                        println("Inicialización tipoArrayB exitosa")
+                                        return InicializacionArrayB(nombre, elementosArrayB)
+                                    } else {
+                                        reportarError("Se esperaba fin de sentencia '|'")
+                                    }
                                 } else {
-                                    reportarError("Se esperaba fin de sentencia '|'")
+                                    reportarError("Se esperaba corchete derecho ']'")
                                 }
                             } else {
-                                reportarError("Se esperaba corchete derecho ']'")
+                                obtenerTokenPosicion(posBackInB)
+                                reportarError("Se esperaba corchete izquierdo '['")
                             }
-                        } else {
-                            obtenerTokenPosicion(posBackInB)
-                            reportarError("Se esperaba corchete izquierdo '['")
                         }
                     }
                 }

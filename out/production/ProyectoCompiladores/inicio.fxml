@@ -33,13 +33,24 @@
                         </columnResizePolicy>
                     </TableView>
                 </Tab>
-            <Tab text="ERRORS">
+            <Tab text="Errores Lexicos">
                <content>
                   <TableView fx:id="tablaErrores" blendMode="DARKEN" layoutX="14.0" layoutY="250" prefHeight="150.0" prefWidth="500.0">
                      <columns>
                         <TableColumn fx:id="cErrorMsj" prefWidth="342.0" text="Mensaje Error" />
                         <TableColumn fx:id="cErrorFila" prefWidth="108.0" text="Fila" />
                         <TableColumn fx:id="cErrorColumna" prefWidth="119.0" text="Columna" />
+                     </columns>
+                  </TableView>
+               </content>
+            </Tab>
+            <Tab text="Errores Sintácticos">
+               <content>
+                  <TableView fx:id="tablaErroresS" blendMode="DARKEN" layoutX="14.0" layoutY="250" prefHeight="150.0" prefWidth="500.0">
+                     <columns>
+                        <TableColumn fx:id="cErrorMsjS" prefWidth="342.0" text="Mensaje Error" />
+                        <TableColumn fx:id="cErrorFilaS" prefWidth="108.0" text="Fila" />
+                        <TableColumn fx:id="cErrorColumnaS" prefWidth="119.0" text="Columna" />
                      </columns>
                   </TableView>
                </content>

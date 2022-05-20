@@ -25,16 +25,21 @@ class CicloWhile : Sentencia {
 
             val sentencias = TreeItem("Sentencias")
             raiz.children.add(sentencias)
-            for (sentencia in listaSentencias) {
-                sentencias.children.add(sentencia.getArbolVisual())
+
+            if(listaSentencias!=null) {
+                for (sentencia in listaSentencias) {
+                    sentencias.children.add(sentencia.getArbolVisual())
+                }
             }
         }else if(condicionR!=null){
             raiz.children.add((condicionR!!.getArbolVisual()))
 
             val sentencias = TreeItem("Sentencias")
             raiz.children.add(sentencias)
-            for (sentencia in listaSentencias) {
-                sentencias.children.add(sentencia.getArbolVisual())
+            if(listaSentencias!=null) {
+                for (sentencia in listaSentencias) {
+                    sentencias.children.add(sentencia.getArbolVisual())
+                }
             }
         }
         return raiz

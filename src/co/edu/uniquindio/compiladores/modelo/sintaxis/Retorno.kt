@@ -4,8 +4,8 @@ import javafx.scene.control.TreeItem
 
 class Retorno : Sentencia {
 
-    lateinit var expresion:Expresion
-    lateinit var identificador:String
+    var expresion:Expresion?=null
+    var identificador:String?=null
 
     constructor( expresion: Expresion){
         this.expresion=expresion
@@ -18,7 +18,7 @@ class Retorno : Sentencia {
         var raiz=TreeItem("Retorno")
 
         if(expresion!=null){
-            raiz.children.add(expresion.getArbolVisual())
+            raiz.children.add(expresion!!.getArbolVisual())
         }else if(identificador!= null){
             raiz.children.add(TreeItem("id Variable Retorno: "+identificador))
         }

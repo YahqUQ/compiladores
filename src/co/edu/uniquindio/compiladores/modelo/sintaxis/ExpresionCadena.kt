@@ -5,9 +5,9 @@ import sun.reflect.generics.tree.Tree
 
 class ExpresionCadena:Expresion {
 
-    lateinit var valor:String
-    lateinit var expresionCadenaDer:ExpresionCadena
-    lateinit var expresionCadenaIzq:ExpresionCadena
+    var valor:String?=null
+    var expresionCadenaDer:ExpresionCadena?=null
+    var expresionCadenaIzq:ExpresionCadena?=null
 
     constructor(expresionCadena: String){
         this.valor=expresionCadena
@@ -24,8 +24,8 @@ class ExpresionCadena:Expresion {
             raiz.children.add(TreeItem("valor: "+valor))
 
         }else if(expresionCadenaDer!=null&&expresionCadenaIzq!=null){
-            raiz.children.add(expresionCadenaIzq.getArbolVisual())
-            raiz.children.add(expresionCadenaDer.getArbolVisual())
+            raiz.children.add(expresionCadenaIzq!!.getArbolVisual())
+            raiz.children.add(expresionCadenaDer!!.getArbolVisual())
 
         }
         return raiz

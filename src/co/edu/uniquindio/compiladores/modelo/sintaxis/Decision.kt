@@ -5,9 +5,9 @@ import javafx.scene.control.TreeItem
 class Decision : Sentencia {
 
     var condicionL: ExpresionLogica? = null
-    var condicionR: ExpresionRelacional?=null
-    var listaSentenciaIF: ArrayList<Sentencia>?=null
-    var listaSentenciaELSE: ArrayList<Sentencia>?=null
+    var condicionR: ExpresionRelacional? = null
+    var listaSentenciaIF: ArrayList<Sentencia>? = null
+    var listaSentenciaELSE: ArrayList<Sentencia>? = null
 
     constructor(
         condicion: ExpresionLogica,
@@ -51,16 +51,24 @@ class Decision : Sentencia {
 
         val sentenciasIF = TreeItem("Sentencias IF")
         raiz.children.add(sentenciasIF)
-        for (sentencia in listaSentenciaIF!!) {
-            sentenciasIF.children.add(sentencia.getArbolVisual())
+
+        if (listaSentenciaIF != null) {
+            for (sentencia in listaSentenciaIF!!) {
+                sentenciasIF.children.add(sentencia.getArbolVisual())
+            }
         }
 
 
-        val sentenciasELSE = TreeItem("Sentencias ELSE")
-        raiz.children.add(sentenciasELSE)
-        for (sentencia in listaSentenciaELSE!!) {
-            sentenciasELSE.children.add(sentencia.getArbolVisual())
+
+        if (listaSentenciaELSE != null) {
+
+            val sentenciasELSE = TreeItem("Sentencias ELSE")
+            raiz.children.add(sentenciasELSE)
+            for (sentencia in listaSentenciaELSE!!) {
+                sentenciasELSE.children.add(sentencia.getArbolVisual())
+            }
         }
+
 
         return raiz
     }
