@@ -4,13 +4,42 @@ import javafx.scene.control.TreeItem
 
 class InicializacionArray : Sentencia {
 
-    constructor(nombre: String, nombreAsig: String)
+    var nombre: String
+    var nombreAsignacion: String? = null
+    var invocacionFuncion: InvocacionFuncion? = null
+    var listaElementos: MutableList<ElementoArray>? = null
 
-    constructor(nombre: String, invocacionFuncion: InvocacionFuncion)
+    constructor(nombre: String, nombreAsig: String) {
+        this.nombre = nombre
+        this.nombreAsignacion = nombreAsig
+    }
 
-    constructor(nombre: String, listaElementos: MutableList<ElementoArray>)
+    constructor(nombre: String, invocacionFuncion: InvocacionFuncion) {
+        this.nombre = nombre
+        this.invocacionFuncion = invocacionFuncion
+    }
+
+    constructor(nombre: String, listaElementos: MutableList<ElementoArray>) {
+        this.nombre = nombre
+        this.listaElementos = listaElementos
+    }
 
     override fun getArbolVisual(): TreeItem<String> {
-        TODO("Not yet implemented")
+        var raiz = TreeItem("Inicializacion Array")
+        if (nombre != null) {
+            raiz.children.add(TreeItem("nombre: "+nombre))
+            if (nombreAsignacion != null) {
+                raiz.children.add(TreeItem("identificador asignado: "+nombreAsignacion))
+            } else if (invocacionFuncion != null) {
+                raiz.children.add(invocacionFuncion!!.getArbolVisual())
+            } else if (listaElementos != null) {
+                var elementos = TreeItem("Elementos")
+                raiz.children.add(elementos)
+                for (elem in listaElementos!!.toList()) {
+                    elementos.children.add(elem.getArbolVisual())
+                }
+            }
+        }
+        return raiz
     }
 }
