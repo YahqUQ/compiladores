@@ -2075,7 +2075,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
             (tokenActual.categoria == Categoria.PALABRA_RESERVADA && (tokenActual.lexema == "TRUE" ||
                     tokenActual.lexema == "FALSE"))
         ) {
-           return ElementoArray(tokenActual.lexema)
+           return ElementoArray(tokenActual.categoria.name, tokenActual.lexema)
         } else {
             return null
         }

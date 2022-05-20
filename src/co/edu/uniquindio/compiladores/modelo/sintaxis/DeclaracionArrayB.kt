@@ -17,7 +17,7 @@ class DeclaracionArrayB : Sentencia {
     override fun getArbolVisual(): TreeItem<String> {
         var raiz = TreeItem("Declaración ArrayB")
         if (nombre != null && tipoVariable != null && tipoDato != null) {
-            raiz.children.add(TreeItem("nombreVar: "+nombre+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+tipoDato.tipo))
+            raiz.children.add(TreeItem("nombreVar: "+nombre+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+tipoDato))
         }
         return raiz
     }
