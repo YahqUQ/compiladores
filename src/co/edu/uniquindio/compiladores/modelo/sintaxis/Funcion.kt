@@ -1,6 +1,8 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
+import co.edu.uniquindio.compiladores.modelo.semantica.Simbolo
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 /*
@@ -8,7 +10,7 @@ import javafx.scene.control.TreeItem
  */
 class Funcion : Elemento {
 
-    var nombre: String
+    var nombreToken: Token
     var tipoRetorno: TipoDato?=null
     var listaParametros: ArrayList<Parametro>
     var listaSentencias: ArrayList<Sentencia>
@@ -17,7 +19,7 @@ class Funcion : Elemento {
         nombre: Token, listaParametros: ArrayList<Parametro>, tipoDato: TipoDato?,
         listaSentencias: ArrayList<Sentencia>
     ) {
-        this.nombre = nombre.lexema
+        this.nombreToken = nombre
         if (tipoDato != null) {
             this.tipoRetorno = tipoDato
         }
@@ -30,7 +32,7 @@ class Funcion : Elemento {
         val raiz = TreeItem("Función")
         if (tipoRetorno != null) {
             raiz.children
-                .add(TreeItem(nombre + ":" + tipoRetorno!!.tipo))
+                .add(TreeItem(nombreToken.lexema + ":" + tipoRetorno!!.tipo))
         }
 
 
@@ -54,6 +56,51 @@ class Funcion : Elemento {
         }
         return raiz
     }
+
+    override fun llenarTablaSimbolos(tablaSimbolo: TablaSimbolo) {
+
+        var tipoParametros:  ArrayList<String>? = ArrayList()
+
+        for(parametro:Parametro in listaParametros){
+
+            tipoParametros!!.add(parametro.tipoVar!!.tipo)
+            tipoParametros!!.add(parametro.tipoVarA!!.tipo)
+
+            if(parametro.tipoVarB!=null){
+                tipoParametros!!.add("ArrayBnotImp")
+            }
+
+            tablaSimbolo.guardarSimboloVariable(parametro.nombre,parametro.tipoVar!!.tipo,true,"Funcion:"+nombreToken.lexema+listaParametros+"/",nombreToken.fila,nombreToken.columna)
+
+        }
+        tablaSimbolo.guardarSimboloFuncion(nombreToken.lexema, tipoRetorno!!.tipo,tipoParametros!!,nombreToken.fila,nombreToken.columna)
+
+        for(sentencia:Sentencia in listaSentencias){
+            sentencia.llenarTablaSimbolos(tablaSimbolo,"Funcion:"+nombreToken.lexema+listaParametros+"/")
+        }
+    }
+
+    override fun analizarSemantica(tablaSimbolo: TablaSimbolo) {
+        var tipoParametros:  ArrayList<String>? = ArrayList()
+
+        for(parametro:Parametro in listaParametros){
+
+            tipoParametros!!.add(parametro.tipoVar!!.tipo)
+            tipoParametros!!.add(parametro.tipoVarA!!.tipo)
+
+            if(parametro.tipoVarB!=null){
+                tipoParametros!!.add("ArrayBnotImp")
+            }
+
+            tablaSimbolo.guardarSimboloVariable(parametro.nombre,parametro.tipoVar!!.tipo,true,"Funcion:"+nombreToken.lexema+listaParametros+"/",nombreToken.fila,nombreToken.columna)
+
+        }
+
+        for(sentencia:Sentencia in listaSentencias){
+            sentencia.analizarSemantica(tablaSimbolo,"Funcion:"+nombreToken.lexema+listaParametros+"/")
+        }
+    }
+
 
 
 }

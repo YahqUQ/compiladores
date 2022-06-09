@@ -1,13 +1,13 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.lexico.Categoria
 import javafx.scene.control.TreeItem
 
-class ElementoArray(categoria: String, valor: String): Elemento() {
+class ElementoArray(categoria: String, valor: String) {
 
     var categoria: String = categoria
     var valor: String = valor
-    override fun getArbolVisual(): TreeItem<String> {
+
+    fun getArbolVisual(): TreeItem<String> {
         var raiz = TreeItem("Elemento")
         if (this.categoria != null) {
             raiz.children.add(TreeItem("Categoria: " + this.categoria))

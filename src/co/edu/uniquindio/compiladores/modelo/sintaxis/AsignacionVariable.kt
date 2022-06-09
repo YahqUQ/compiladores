@@ -5,13 +5,13 @@ import javafx.scene.control.TreeItem
 class AsignacionVariable : Sentencia {
 
     var id:String
-    var idAsignado:String?=null
+    var tokenIDAsignado:String?=null
     var expresion:Expresion?=null
     var invocacionFuncion:InvocacionFuncion?=null
 
     constructor(identificador:String,identificadorAsignado: String){
         this.id=identificador
-        this.idAsignado=identificadorAsignado
+        this.tokenIDAsignado=identificadorAsignado
     }
     constructor(identificador: String, expresion:Expresion){
         this.id=identificador
@@ -27,8 +27,8 @@ class AsignacionVariable : Sentencia {
 
         if(id!=null){
             raiz.children.add(TreeItem("id: "+id))
-            if(idAsignado!=null){
-                raiz.children.add(TreeItem("Variable Asignada: "+idAsignado))
+            if(tokenIDAsignado!=null){
+                raiz.children.add(TreeItem("Variable Asignada: "+tokenIDAsignado))
             }else if(expresion!=null){
                 raiz.children.add(expresion!!.getArbolVisual())
             }else if(invocacionFuncion!=null){

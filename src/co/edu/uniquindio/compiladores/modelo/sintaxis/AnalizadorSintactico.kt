@@ -134,7 +134,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "GLOBAL") {
             obtenerSgteToken()
-            var declaracionAsignacionVariable=esDeclaracionAsignacion()
+            val declaracionAsignacionVariable=esDeclaracionAsignacion()
             if (declaracionAsignacionVariable!= null) {
                 println("Variable Global Exitosa")
                 return VariableGlobal(declaracionAsignacionVariable)
@@ -149,11 +149,14 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     private fun esDeclaracionAsignacion(): DeclaracionAsignacionVariable? {
 
         posBack = posicionActual
+
+
+
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "CONST") {
             val tipoVariable = "INMUTABLE"
             obtenerSgteToken()
-            if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
-                val nombre = tokenActual.lexema
+            if (tokenActual.categoria == Categoria.IDENTIFICADOR){
+                val tokenNombre= tokenActual
                 obtenerSgteToken()
                 if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                     obtenerSgteToken()
@@ -168,8 +171,9 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
                         if (tokenActual.categoria == Categoria.OPERADOR_ASIGNACION) {
                             obtenerSgteToken()
+
                             if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
-                                val nombreAsig = tokenActual.lexema
+                                val tokenAsig = tokenActual
                                 posBack = posicionActual
                                 obtenerSgteToken()
 
@@ -179,8 +183,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     if (invocacionDeFuncion != null) {
                                         if (tokenActual.categoria == Categoria.TERMINAL) {
                                             println("Asignación Exitosa")
-                                            return DeclaracionAsignacionVariable(
-                                                nombre,
+                                            return DeclaracionAsignacionVariable(tokenNombre,
                                                 tipoVariable,
                                                 tipoDato,
                                                 invocacionDeFuncion
@@ -201,8 +204,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     if (expresion != null) {
                                         if (tokenActual.categoria == Categoria.TERMINAL) {
                                             println("Asignacion EXITOSA")
-                                            return DeclaracionAsignacionVariable(
-                                                nombre,
+                                            return DeclaracionAsignacionVariable(tokenNombre,
                                                 tipoVariable,
                                                 tipoDato,
                                                 expresion
@@ -217,7 +219,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
                                 if (tokenActual.categoria == Categoria.TERMINAL) {
                                     println("Asignación Exitosa")
-                                    return DeclaracionAsignacionVariable(nombre, tipoVariable, tipoDato, nombreAsig)
+                                    return DeclaracionAsignacionVariable(tokenNombre,tipoVariable, tipoDato, tokenAsig)
                                 } else {
                                     reportarError("Se esperaba fin de sentencia '|'")
                                 }
@@ -246,7 +248,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
         if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
             val tipoVariable = "MUTABLE"
-            val nombre = tokenActual.lexema
+             val tokenNombre = tokenActual
             obtenerSgteToken()
 
             if (tokenActual.categoria == Categoria.OPERADOR_ASIGNACION || tokenActual.categoria == Categoria.PARENTESIS_IZQ
@@ -270,7 +272,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     if (tokenActual.categoria == Categoria.OPERADOR_ASIGNACION) {
                         obtenerSgteToken()
                         if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
-                            val nombreAsig = tokenActual.lexema
+                            val tokenAsignado = tokenActual
                             posBack = posicionActual
                             obtenerSgteToken()
 
@@ -280,8 +282,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 if (invocacionDeFuncion != null) {
                                     if (tokenActual.categoria == Categoria.TERMINAL) {
                                         println("Asignación Exitosa")
-                                        return DeclaracionAsignacionVariable(
-                                            nombre,
+                                        return DeclaracionAsignacionVariable(tokenNombre,
                                             tipoVariable,
                                             tipoDato,
                                             invocacionDeFuncion
@@ -302,7 +303,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 if (expresion != null) {
                                     if (tokenActual.categoria == Categoria.TERMINAL) {
                                         println("Asignacion EXITOSA")
-                                        return DeclaracionAsignacionVariable(nombre, tipoVariable, tipoDato, expresion)
+                                        return DeclaracionAsignacionVariable(tokenNombre, tipoVariable, tipoDato, expresion)
                                     } else {
                                         reportarError("Se esperaba fin de sentencia '|'")
                                     }
@@ -313,7 +314,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
 
                             if (tokenActual.categoria == Categoria.TERMINAL) {
                                 println("Asignación Exitosa")
-                                return DeclaracionAsignacionVariable(nombre, tipoVariable, tipoDato, nombreAsig)
+                                return DeclaracionAsignacionVariable(tokenNombre, tipoVariable, tipoDato, tokenAsignado)
                             } else {
                                 reportarError("Se esperaba fin de sentencia '|'")
                             }
@@ -374,7 +375,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             obtenerSgteToken()
                             if (tokenActual.categoria == Categoria.DOS_PUNTOS) {
                                 obtenerSgteToken()
-                                var tipoDato = esTipoDato()
+                                 var tipoDato = esTipoDato()
                                 if (tokenActual.lexema == "NONE" || tipoDato != null) {
                                     if(tokenActual.lexema=="NONE"){
                                         tipoDato=TipoDato("NONE")
@@ -399,7 +400,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                                 reportarError("Se esperaba '}' es funcion")
                                             }
                                         }else {
-                                            var escape = ignorarTokensHasta("}", "FUNCTION", "GLOBAL")
+                                            val escape = ignorarTokensHasta("}", "FUNCTION", "GLOBAL")
 
                                             if (escape == "FUNCTION" || escape == "GLOBAL") {
                                                 obtenerTokenPosicion(posicionActual - 1)
@@ -412,7 +413,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     }
                                 } else {
                                     reportarError("Tipo de Dato de Retorno Inválido")
-                                    var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                                    val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                                     if(escape=="FUNCTION"||escape=="GLOBAL"){
                                         obtenerTokenPosicion(posicionActual-1)
@@ -432,7 +433,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 }
                             } else {
                                 reportarError("Se esperaba ';'")
-                                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                                val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                                 if(escape=="FUNCTION"||escape=="GLOBAL"){
                                     obtenerTokenPosicion(posicionActual-1)
@@ -452,7 +453,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             }
                         } else {
                             reportarError("Se esperaba ')'")
-                            var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                            val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                             if(escape=="FUNCTION"||escape=="GLOBAL"){
                                 obtenerTokenPosicion(posicionActual-1)
@@ -470,7 +471,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                     reportarError("Se esperaba '}' es funcion")
                                 }
                             }else{
-                                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                                val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                                 if(escape=="FUNCTION"||escape=="GLOBAL"){
                                     obtenerTokenPosicion(posicionActual-1)
@@ -491,7 +492,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                             }
                         }
                     }else{
-                        var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                        val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                         if(escape=="FUNCTION"||escape=="GLOBAL"){
                             obtenerTokenPosicion(posicionActual-1)
@@ -512,7 +513,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     }
                 } else {
                     reportarError("Se esperaba '('")
-                    var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                    val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                     if(escape=="FUNCTION"||escape=="GLOBAL"){
                         obtenerTokenPosicion(posicionActual-1)
@@ -533,7 +534,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 }
             } else {
                 reportarError("Falta Identificador")
-                var escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
+                val escape =ignorarTokensHasta("{","FUNCTION","GLOBAL")
 
                 if(escape=="FUNCTION"||escape=="GLOBAL"){
                     obtenerTokenPosicion(posicionActual-1)
@@ -739,10 +740,6 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         if (s != null) {
             return s
         }
-        s = esInvocacionDeFuncion()
-        if (s != null) {
-            return s
-        }
 
         s = esInicializacionArrayB()
         if (s != null) {
@@ -760,6 +757,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         }
 
         s = esDeclaracionArray()
+        if (s != null) {
+            return s
+        }
+
+        s = esInvocacionDeFuncion()
         if (s != null) {
             return s
         }
@@ -1431,8 +1433,13 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         }
                     }
                 }else{
-                    reportarError("No es una expresion ni una invocacion de funcion ni una variable")
-                    ignorarTokensHasta("|")
+                    if((tokenActual.categoria==Categoria.CORCHETE_IZQ)){
+                        obtenerTokenPosicion(posBack)
+                        return null
+                    }else{
+                        reportarError("No es una expresion ni una invocacion de funcion ni una variable")
+                        ignorarTokensHasta("|")
+                    }
 
                 }
 
@@ -1559,7 +1566,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
     private fun esInvocacionDeFuncion(): InvocacionFuncion? {
         posBack = posicionActual
         if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
-            val nombreFuncion = tokenActual.lexema
+            val nombreFuncion = tokenActual
             obtenerSgteToken()
             if (tokenActual.categoria == Categoria.PARENTESIS_IZQ) {
                 obtenerSgteToken()
@@ -1577,7 +1584,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         reportarError("Se esperaba ')'")
                     }
                 }
-            } else {
+            } else if(tokenActual.categoria==Categoria.CORCHETE_IZQ) {
+                obtenerTokenPosicion(posBack)
+                return null
+            }else{
                 reportarError("Se esperaba '(' ")
             }
 
@@ -1780,7 +1790,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         posBack=posicionActual
         if (tokenActual.categoria == Categoria.PARENTESIS_IZQ) {
             obtenerSgteToken()
-            var posBackR=posicionActual
+            val posBackR=posicionActual
             val expresionAritmeticaIzquierda = esExpresionArtimetica()
             if (expresionAritmeticaIzquierda != null) {
                 if (tokenActual.categoria == Categoria.PARENTESIS_DER) {
@@ -1887,7 +1897,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 return expresionRelacionalIzq
             }
         } else if (tokenActual.categoria == Categoria.PARENTESIS_IZQ) {
-            var posBackR=posicionActual
+            val posBackR=posicionActual
             obtenerSgteToken()
             val expresionRelacionalIzq = esExpresionRelacional()
             if (expresionRelacionalIzq != null) {
@@ -1954,8 +1964,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
      */
     private fun esDeclaracionArray(): DeclaracionArray? {
         posBack = posicionActual
-        var tipoVariable = ""
-        var nombre = ""
+        val tipoVariable: String
+        val nombre: String
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA &&
             tokenActual.lexema == "CONST") {
             tipoVariable = "INMUTABLE"
@@ -1975,6 +1985,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     } else {
                         obtenerTokenPosicion(posBack)
                     }
+                }else if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION) {
+                    obtenerTokenPosicion(posBack)
+                    return null
+                }else{
+                    reportarError("Se esperaba ';'")
                 }
             }
         } else if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
@@ -1993,6 +2008,11 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                 } else {
                     obtenerTokenPosicion(posBack)
                 }
+            }else if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION) {
+                obtenerTokenPosicion(posBack)
+                return null
+            }else{
+                reportarError("Se esperaba ';'")
             }
         }
         return null
@@ -2002,7 +2022,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
    <Inicialización de Array> ::=  Identificador “:” ( Identificador | <Invocación de Función> | “[“
     */
     private fun esInicializacionArray(): InicializacionArray? {
-        var nombre = ""
+        val nombre: String
+        posBack=posicionActual
         if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
             nombre = tokenActual.lexema
             obtenerSgteToken()
@@ -2029,6 +2050,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         }
                     } else if (tokenActual.categoria == Categoria.CORCHETE_IZQ) {
                         obtenerSgteToken()
+                        if(tokenActual.categoria==Categoria.CORCHETE_IZQ){
+                            obtenerTokenPosicion(posBack)
+                            return null
+                        }
                         val elementosArray = sonElementosArray()
                         if (tokenActual.categoria == Categoria.CORCHETE_DER) {
                             obtenerSgteToken()
@@ -2086,8 +2111,8 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         */
     private fun esDeclaracionArrayB(): Sentencia? {
         posBack = posicionActual
-        var tipoVariable = ""
-        var nombre = ""
+        val tipoVariable: String
+        val nombre: String
         if (tokenActual.categoria == Categoria.PALABRA_RESERVADA && tokenActual.lexema == "CONST") {
             tipoVariable = "INMUTABLE"
             obtenerSgteToken()
@@ -2116,7 +2141,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                         obtenerTokenPosicion(posBack)
                         reportarError("Falta Array B de variable")
                     }
-                } else {
+                } else if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION) {
+                    obtenerTokenPosicion(posBack)
+                    return null
+                }else{
                     reportarError("Se esperaba ';'")
                 }
             }
@@ -2139,8 +2167,10 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                     obtenerTokenPosicion(posBack)
                     reportarError("Falta tipo Array de variable ")
                 }
-            } else {
+            } else if(tokenActual.categoria==Categoria.OPERADOR_ASIGNACION) {
                 obtenerTokenPosicion(posBack)
+                return null
+            }else{
                 reportarError("Se esperaba ';'")
             }
         }
@@ -2152,7 +2182,7 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
         */
     private fun esInicializacionArrayB(): InicializacionArrayB? {
         val posBackInB = posicionActual
-        var nombre = ""
+        val nombre: String
         if (tokenActual.categoria == Categoria.IDENTIFICADOR) {
             nombre = tokenActual.lexema
             obtenerSgteToken()
@@ -2199,6 +2229,9 @@ class AnalizadorSintactico(private var listaTokens: ArrayList<Token>) {
                                 obtenerTokenPosicion(posBackInB)
                                 reportarError("Se esperaba corchete izquierdo '['")
                             }
+                        }else{
+                            obtenerTokenPosicion(posBackInB)
+                            return null
                         }
                     }
                 }
