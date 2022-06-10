@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 import sun.reflect.generics.tree.Tree
 
@@ -29,6 +30,10 @@ class ExpresionCadena:Expresion {
 
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
     }
 
 }

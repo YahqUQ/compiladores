@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class DeclaracionArrayB : Sentencia {
@@ -20,5 +21,13 @@ class DeclaracionArrayB : Sentencia {
             raiz.children.add(TreeItem("nombreVar: "+nombre+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+tipoDato))
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
     }
 }

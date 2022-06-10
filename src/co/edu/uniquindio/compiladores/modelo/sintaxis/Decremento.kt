@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class Decremento : Sentencia {
@@ -16,6 +17,14 @@ class Decremento : Sentencia {
             raiz.children.add(TreeItem("variable: "+variable))
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
     }
 
 }

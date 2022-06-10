@@ -72,4 +72,8 @@ class InvocacionFuncion : Sentencia {
 
     }
 
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+        TODO("Not yet implemented")
+    }
+
 }
