@@ -5,6 +5,7 @@ import co.edu.uniquindio.compiladores.modelo.lexico.Error
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
 import co.edu.uniquindio.compiladores.modelo.semantica.AnalizadorSemantico
 import co.edu.uniquindio.compiladores.modelo.sintaxis.AnalizadorSintactico
+import com.sun.deploy.trace.Trace
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
@@ -42,11 +43,13 @@ class InicioController : Initializable {
     @FXML lateinit var Ccolumna : TableColumn<Token,Int>
 
     /*
-       Tabla donde se identifican los errores léxicos
+       Tabla donde se identifican los errores
     */
     @FXML lateinit var tablaErrores: TableView<Error>
 
     @FXML lateinit var tablaErroresS: TableView<Error>
+
+    @FXML lateinit var tablaErroresSM: TableView<Error>
     /*
        Cada una de las columnas de la tabla de errores léxicos
     */
@@ -64,6 +67,16 @@ class InicioController : Initializable {
     @FXML lateinit var cErrorFilaS: TableColumn<Error,Int>
 
     @FXML lateinit var cErrorColumnaS: TableColumn<Error,Int>
+
+    /*
+        Cada una de las columnas de la tabla de errores semanticos
+     */
+    @FXML lateinit var cErrorMsjSM: TableColumn<Error, String>
+
+    @FXML lateinit var cErrorFilaSM: TableColumn<Error,Int>
+
+    @FXML lateinit var cErrorColumnaSM: TableColumn<Error,Int>
+
 
 
 
@@ -87,6 +100,9 @@ class InicioController : Initializable {
         cErrorFilaS.cellValueFactory= PropertyValueFactory("Fila")
         cErrorColumnaS.cellValueFactory= PropertyValueFactory("Columna")
 
+        cErrorMsjSM.cellValueFactory= PropertyValueFactory("Error")
+        cErrorFilaSM.cellValueFactory= PropertyValueFactory("Fila")
+        cErrorColumnaSM.cellValueFactory= PropertyValueFactory("Columna")
 
         arbolSintactico.cellFactory = null
 
@@ -123,12 +139,12 @@ class InicioController : Initializable {
                     semantico.llenarTablaSimbolos()
                     semantico.analizarSemantica()
 
+                    tablaErroresSM.items= FXCollections.observableArrayList(semantico.erroresSemanticos)
+
+
+
                     for (s in semantico.tablaSimbolos.listaSimbolos) {
                         println(s)
-                    }
-
-                    for (e in semantico.tablaSimbolos.listaErrores) {
-                        println(e)
                     }
 
 
@@ -141,6 +157,7 @@ class InicioController : Initializable {
 
 
             }catch (exception: Exception){
+                Trace.printException(exception)
                 var al: Alert = Alert(Alert.AlertType.ERROR,"Hay errores , Revise las tablas")
                 al.showAndWait()
             }

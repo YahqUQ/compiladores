@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.lexico.Error
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
 import co.edu.uniquindio.compiladores.modelo.semantica.Simbolo
 import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
@@ -63,10 +64,11 @@ class Funcion : Elemento {
 
         for(parametro:Parametro in listaParametros){
 
-            tipoParametros!!.add(parametro.tipoVar!!.tipo)
-            tipoParametros!!.add(parametro.tipoVarA!!.tipo)
-
-            if(parametro.tipoVarB!=null){
+            if(parametro.tipoVar!=null){
+                tipoParametros!!.add(parametro.tipoVar!!.tipo)
+            }else if(parametro.tipoVarA!=null){
+                tipoParametros!!.add(parametro.tipoVarA!!.tipo)
+            }else if(parametro.tipoVarB!=null){
                 tipoParametros!!.add("ArrayBnotImp")
             }
 
@@ -76,29 +78,47 @@ class Funcion : Elemento {
         tablaSimbolo.guardarSimboloFuncion(nombreToken.lexema, tipoRetorno!!.tipo,tipoParametros!!,nombreToken.fila,nombreToken.columna)
 
         for(sentencia:Sentencia in listaSentencias){
-            sentencia.llenarTablaSimbolos(tablaSimbolo,"Funcion:"+nombreToken.lexema+listaParametros+"/")
+            sentencia.llenarTablaSimbolos(tablaSimbolo,"Funcion:"+nombreToken.lexema+tipoParametros+"/")
         }
     }
 
     override fun analizarSemantica(tablaSimbolo: TablaSimbolo) {
+
+        var debeRetorno = if(tipoRetorno!!.tipo=="NONE") false else true
+
         var tipoParametros:  ArrayList<String>? = ArrayList()
 
         for(parametro:Parametro in listaParametros){
 
-            tipoParametros!!.add(parametro.tipoVar!!.tipo)
-            tipoParametros!!.add(parametro.tipoVarA!!.tipo)
-
-            if(parametro.tipoVarB!=null){
+            if(parametro.tipoVar!=null){
+                tipoParametros!!.add(parametro.tipoVar!!.tipo)
+            }else if(parametro.tipoVarA!=null){
+                tipoParametros!!.add(parametro.tipoVarA!!.tipo)
+            }else if(parametro.tipoVarB!=null){
                 tipoParametros!!.add("ArrayBnotImp")
             }
 
-            tablaSimbolo.guardarSimboloVariable(parametro.nombre,parametro.tipoVar!!.tipo,true,"Funcion:"+nombreToken.lexema+listaParametros+"/",nombreToken.fila,nombreToken.columna)
-
         }
-
         for(sentencia:Sentencia in listaSentencias){
-            sentencia.analizarSemantica(tablaSimbolo,"Funcion:"+nombreToken.lexema+listaParametros+"/")
+
+            if(sentencia is Retorno) {
+                if(tipoRetorno!!.tipo=="NONE"){
+                    tablaSimbolo.listaErrores.add(Error("Metodo no deberia retornar",nombreToken))
+                }else{
+                    debeRetorno=false
+                    sentencia.analizarSemantica(tablaSimbolo, "Funcion:" + nombreToken.lexema + tipoParametros + "/", this)
+                }
+
+            }else{
+                sentencia.analizarSemantica(tablaSimbolo, "Funcion:" + nombreToken.lexema + tipoParametros + "/")
+            }
+
         }
+
+        if(debeRetorno){
+            tablaSimbolo.listaErrores.add(Error("Falta retorno",nombreToken))
+        }
+
     }
 
 

@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class Lectura : Sentencia {
@@ -17,6 +18,14 @@ class Lectura : Sentencia {
             raiz.children.add(TreeItem("cadena leida: "+cadenaLeida))
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+
     }
 
 }

@@ -49,4 +49,17 @@ class Parametro {
 
         return raiz
     }
+
+    override fun toString(): String {
+        if(tipoVar!=null){
+            return "${tipoVar!!.tipo}"
+        }else if (tipoVarA!=null){
+            return "${tipoVarA!!.tipo}"
+        }else{
+            return "$tipoVarB"
+        }
+
+    }
+
+
 }

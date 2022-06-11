@@ -1,0 +1,85 @@
+//PRUEBAS ASERTACION
+
+FUNCTION #funcion(#param;STRING);STRING{
+    #var;STRING: °°hola°°|
+    RETURN (#param) |
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	 #var;STRING: °°cadena°° |
+	 #var2;STRING: #var |
+
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	#var;STRING: °°cadena°° |
+	WHILE(#var){
+
+	}
+
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+
+    #var;STRING: °°cadena°° |
+    IF(Z3>>Z4){
+    	 #var2;STRING: #var |
+    }
+}
+
+[
+FUNCTION #funcion(#param;CHAR);NONE{
+	 #var;STRING: °°cadena°° |
+	 #var2;STRING: #var |
+
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	 #var;STRING: °°cadena°° |
+	 #var2;STRING: #var |
+
+}
+
+]
+
+
+//PRUEBAS FALLOS
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+
+}
+
+FUNCTION #funcion(#param;CHAR);CHAR{
+
+RETURN (Z5) |
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	 #var;STRING: °°cadena°° |
+	 #var;STRING: #b |
+
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+
+    #var2;STRING: #var |
+    IF(Z3>>Z4){
+    	 #var;STRING: °°cadena°° |
+
+    }
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	#var;STRING: °°cadena°° |
+	#var2; BOOLEAN: #var |
+	WHILE(#var2){
+
+	}
+}
+
+FUNCTION #funcion(#param;CHAR);NONE{
+	#b ;STRING: °°HOLA°° |
+	#A(#b_#c_Z5_#d)|
+
+}

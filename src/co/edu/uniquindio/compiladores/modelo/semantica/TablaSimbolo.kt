@@ -18,7 +18,7 @@ class TablaSimbolo() {
             return nuevo
         } else {
 
-            listaErrores.add(Error("Ya existe la variable "+nombre,fila,columna))
+            listaErrores.add(Error("Ya existe la variable: "+nombre,fila,columna))
         }
         return null
     }
@@ -32,7 +32,7 @@ class TablaSimbolo() {
             listaSimbolos.add(nuevo)
             return nuevo
         } else {
-            listaErrores.add(Error("Ya existe la funcion "+nombre, fila,columna))
+            listaErrores.add(Error("Ya existe la funcion: "+nombre+tipoParametros, fila,columna))
         }
         return null
     }
@@ -40,14 +40,14 @@ class TablaSimbolo() {
     /**
      * Verifica la existencia de la variable dentro de la tabla de simbolos en un ámbito dado
      */
-    fun buscarSimboloVariable(nombre: String, vararg ambito:String): Simbolo? {
+    fun buscarSimboloVariable(nombre: String, ambito:String): Simbolo? {
+
+
         for (simbolo in listaSimbolos) {
             if (simbolo.ambito != null) {
                 if (nombre == simbolo.nombre) {
-                    for (a in ambito){
-                        if(a == simbolo.ambito){
-                            return simbolo;
-                        }
+                    if(ambito.contains(simbolo.ambito)){
+                        return simbolo
                     }
                 }
             }

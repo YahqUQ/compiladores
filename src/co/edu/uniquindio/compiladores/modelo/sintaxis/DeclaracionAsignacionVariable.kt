@@ -82,9 +82,12 @@ class DeclaracionAsignacionVariable : Sentencia{
             val simbolo = tablaSimbolos.buscarSimboloVariable(tokenIDAsignado!!.lexema, ambito)
 
             if(simbolo==null){
-                tablaSimbolos.listaErrores.add(Error("Variable no existente",tokenIDAsignado!!.fila , tokenIDAsignado!!.columna))
+                tablaSimbolos.listaErrores.add(Error("Variable no existente: "+ tokenIDAsignado!!.lexema,tokenIDAsignado!!.fila , tokenIDAsignado!!.columna))
+            }else{
+                if(simbolo.tipo!=this.tipoDato!!.tipo){
+                    tablaSimbolos.listaErrores.add(Error("Variable no es tipo ${tipoDato!!.tipo} ",tokenIDAsignado!!.fila , tokenIDAsignado!!.columna))
+                }
             }
-
 
         }else if(invocacionFuncion!=null){
                 invocacionFuncion!!.analizarSemantica(tablaSimbolos,ambito)

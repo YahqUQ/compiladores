@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class ExpresionArtimetica:Expresion {
@@ -36,6 +37,10 @@ class ExpresionArtimetica:Expresion {
         }
 
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+
     }
 
 }

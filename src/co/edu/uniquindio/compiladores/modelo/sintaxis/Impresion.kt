@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class Impresion : Sentencia {
@@ -17,6 +18,14 @@ class Impresion : Sentencia {
             raiz.children.add(expresionCadena.getArbolVisual())
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        expresionCadena.analizarSemantica(tablaSimbolos,ambito)
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+
     }
 
 }

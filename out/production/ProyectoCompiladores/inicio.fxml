@@ -55,6 +55,17 @@
                   </TableView>
                </content>
             </Tab>
+            <Tab text="Errores Semánticos">
+               <content>
+                  <TableView fx:id="tablaErroresSM" blendMode="DARKEN" layoutX="14.0" layoutY="250" prefHeight="150.0" prefWidth="500.0">
+                     <columns>
+                        <TableColumn fx:id="cErrorMsjSM" prefWidth="342.0" text="Mensaje Error" />
+                        <TableColumn fx:id="cErrorFilaSM" prefWidth="108.0" text="Fila" />
+                        <TableColumn fx:id="cErrorColumnaSM" prefWidth="119.0" text="Columna" />
+                     </columns>
+                  </TableView>
+               </content>
+            </Tab>
 
 
             </tabs>

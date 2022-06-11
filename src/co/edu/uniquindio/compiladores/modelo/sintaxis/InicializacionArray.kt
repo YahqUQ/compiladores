@@ -1,5 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
+import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class InicializacionArray : Sentencia {
@@ -41,5 +42,29 @@ class InicializacionArray : Sentencia {
             }
         }
         return raiz
+    }
+
+    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        if (tablaSimbolos.buscarSimboloVariable(nombre, ambito) == null) {
+            // Reportar error
+        } else {
+            if (nombreAsignacion != null) {
+                if (tablaSimbolos.buscarSimboloVariable(nombreAsignacion!!, ambito) == null) {
+                    // Reportar error
+                }
+            } else {
+                if (invocacionFuncion != null) {
+                    invocacionFuncion!!.analizarSemantica(tablaSimbolos, ambito)
+                } else {
+                    if (listaElementos == null) {
+                        // Reportar error
+                    }
+                }
+            }
+        }
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
+
     }
 }

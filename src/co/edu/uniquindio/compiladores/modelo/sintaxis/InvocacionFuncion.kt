@@ -38,11 +38,11 @@ class InvocacionFuncion : Sentencia {
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
 
-        var listaTipoArgumentos: ArrayList<String>? = null
+        var listaTipoArgumentos: ArrayList<String>? = ArrayList()
 
         for(argumento:Argumento in listaArgumentos){
 
-            var tipoArgumento: String? = null
+            var tipoArgumento: String? = ""
             if(argumento.id!=null){
                 var simbolo: Simbolo? = tablaSimbolos.buscarSimboloVariable(argumento.id!!,ambito)
 
@@ -53,10 +53,10 @@ class InvocacionFuncion : Sentencia {
                 }
 
             }else{
-               tipoArgumento= if(argumento.expresion is ExpresionRelacional) "BOOLEAN" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionLogica) "BOOLEAN" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionArtimetica) "NUMBER_Z" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionCadena) "STRING" else ""
+                tipoArgumento= if(argumento.expresion is ExpresionRelacional) "BOOLEAN" else tipoArgumento
+                tipoArgumento= if(argumento.expresion is ExpresionLogica) "BOOLEAN" else tipoArgumento
+                tipoArgumento= if(argumento.expresion is ExpresionArtimetica) "NUMBER_Z" else tipoArgumento
+                tipoArgumento= if(argumento.expresion is ExpresionCadena) "STRING" else tipoArgumento
 
             }
 
@@ -69,6 +69,10 @@ class InvocacionFuncion : Sentencia {
         if(invFuncion==null){
             tablaSimbolos.listaErrores.add(Error("No existe la función "+tokenId.lexema+listaTipoArgumentos,tokenId))
         }
+
+    }
+
+    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
 
     }
 

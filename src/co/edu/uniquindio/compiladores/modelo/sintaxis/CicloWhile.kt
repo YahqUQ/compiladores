@@ -48,16 +48,32 @@ class CicloWhile : Sentencia {
     }
 
     override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
-        for(sentencia:Sentencia in listaSentencias){
-            sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"While:"+condicionL!!+condicionR!!+"/")
+        if(condicionR!=null){
+            for(sentencia:Sentencia in listaSentencias){
+                sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"While:"+condicionR!!+"/")
+            }
+        }else{
+            for(sentencia:Sentencia in listaSentencias){
+                sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"While:"+condicionL!!+"/")
+            }
         }
     }
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-        for(sentencia:Sentencia in listaSentencias){
-            sentencia.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionL!!+condicionR!!+"/")
+        if(condicionR!=null){
+            condicionR!!.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionR!!+"/")
+            for(sentencia:Sentencia in listaSentencias){
+                sentencia.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionR!!+"/")
+            }
+        }else{
+            condicionL!!.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionL!!+"/")
+            for(sentencia:Sentencia in listaSentencias){
+                sentencia.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionL!!+"/")
+            }
         }
+
+
+
     }
 
 

@@ -75,13 +75,63 @@ class Decision : Sentencia {
     }
 
     override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
+        if(condicionR!=null){
+            if(listaSentenciaIF!=null){
+                condicionR!!.analizarSemantica(tablaSimbolos,ambito+"IF:"+condicionR!!+"/")
+                for(sentencia:Sentencia in listaSentenciaIF!!){
+                    sentencia.analizarSemantica(tablaSimbolos,ambito+"IF:"+condicionR!!+"/")
+                }
+            }
 
+            if(listaSentenciaELSE!=null){
+                condicionR!!.analizarSemantica(tablaSimbolos,ambito+"ELSE:"+condicionL!!+"/")
+                for(sentencia:Sentencia in listaSentenciaELSE!!){
+                    sentencia.analizarSemantica(tablaSimbolos,ambito+"ELSE:"+condicionR!!+"/")
+                }
+            }
+        }else{
+            if(listaSentenciaIF!=null){
+                condicionL!!.analizarSemantica(tablaSimbolos,ambito+"IF:"+condicionL!!+"/")
+                for(sentencia:Sentencia in listaSentenciaIF!!){
+                    sentencia.analizarSemantica(tablaSimbolos,ambito+"IF:"+condicionL!!+"/")
+                }
+            }
+
+            if(listaSentenciaELSE!=null){
+                condicionL!!.analizarSemantica(tablaSimbolos,ambito+"ELSE:"+condicionL!!+"/")
+                for(sentencia:Sentencia in listaSentenciaELSE!!){
+                    sentencia.analizarSemantica(tablaSimbolos,ambito+"ELSE:"+condicionL!!+"/")
+                }
+            }
+        }
     }
 
     override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
 
-        for(sentencia:Sentencia in listaSentenciaIF!!){
-            sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"IF:"+condicionL!!+condicionR+"/")
+        if(condicionR!=null){
+            if(listaSentenciaIF!=null){
+                for(sentencia:Sentencia in listaSentenciaIF!!){
+                    sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"IF:"+condicionR!!+"/")
+                }
+            }
+
+            if(listaSentenciaELSE!=null){
+                for(sentencia:Sentencia in listaSentenciaELSE!!){
+                    sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"ELSE:"+condicionR!!+"/")
+                }
+            }
+        }else{
+            if(listaSentenciaIF!=null){
+                for(sentencia:Sentencia in listaSentenciaIF!!){
+                    sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"IF:"+condicionL!!+"/")
+                }
+            }
+
+            if(listaSentenciaELSE!=null){
+                for(sentencia:Sentencia in listaSentenciaELSE!!){
+                    sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"ELSE:"+condicionL!!+"/")
+                }
+            }
         }
     }
 
