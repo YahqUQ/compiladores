@@ -1,22 +1,19 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.lexico.Error
-import co.edu.uniquindio.compiladores.modelo.lexico.Token
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class DeclaracionAsignacionVariable : Sentencia{
 
-    var tokenNombre:Token
+    var idVariable:String
     var tipoVariable:String
     var tipoDato:TipoDato? = null
     var expresion:Expresion? =null
-    var tokenIDAsignado:Token? =null
+    var idAsignado:String? =null
     var invocacionFuncion: InvocacionFuncion? =null
 
-    constructor( tokenNombre:Token, tipoVariable: String, tipoDato: TipoDato?,
+    constructor( nombre: String, tipoVariable: String, tipoDato: TipoDato?,
                 valor: Expresion? ){
-
+        this.idVariable=nombre
         this.tipoVariable=tipoVariable
         if (tipoDato != null) {
             this.tipoDato=tipoDato
@@ -24,76 +21,48 @@ class DeclaracionAsignacionVariable : Sentencia{
         if (valor != null) {
             this.expresion=valor
         }
-        this.tokenNombre=tokenNombre
+        idAsignado=""
+
 
     }
 
-    constructor( tokenNombre: Token, tipoVariable: String, tipoDato: TipoDato?,
-                 valor:Token ){
-
+    constructor( nombre: String, tipoVariable: String, tipoDato: TipoDato?,
+                 valor: String ){
+        this.idVariable=nombre
         this.tipoVariable=tipoVariable
         if (tipoDato != null) {
             this.tipoDato=tipoDato
         }
-        this.tokenIDAsignado=valor
-        this.tokenNombre=tokenNombre
+        this.idAsignado=valor
 
     }
 
-    constructor( tokenNombre: Token, tipoVariable: String, tipoDato: TipoDato?,
+    constructor( nombre: String, tipoVariable: String, tipoDato: TipoDato?,
                  valor: InvocacionFuncion ){
-
+        this.idVariable=nombre
         this.tipoVariable=tipoVariable
         if (tipoDato != null) {
             this.tipoDato=tipoDato
         }
         this.invocacionFuncion=valor
-        this.tokenNombre=tokenNombre
     }
 
     override fun getArbolVisual(): TreeItem<String> {
         var raiz=TreeItem("Declaración-Asignación Variable")
 
-        if(tokenNombre.lexema!=null&&tipoVariable!=null&&tipoDato!=null){
-            raiz.children.add(TreeItem("nombreVar: "+tokenNombre.lexema+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+ tipoDato!!.tipo))
+        if(idVariable!=null&&tipoVariable!=null&&tipoDato!=null){
+            raiz.children.add(TreeItem("nombreVar: "+idVariable+", "+"tipoVar: "+tipoVariable+", "+"tipoDato: "+ tipoDato!!.tipo))
 
             if(expresion!=null){
                 raiz.children.add(expresion!!.getArbolVisual())
             }else if(invocacionFuncion!=null){
                 raiz.children.add((invocacionFuncion!!.getArbolVisual()))
-            }else if(tokenIDAsignado!=null){
-                raiz.children.add(TreeItem("Variable Asignada: "+ tokenIDAsignado!!.lexema))
+            }else if(idAsignado!=null){
+                raiz.children.add(TreeItem("Variable Asignada: "+idAsignado))
             }
         }
 
         return raiz
-    }
-
-    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-        var modificable: Boolean   = if(tipoVariable=="INMUTABLE") false else true
-        tablaSimbolos.guardarSimboloVariable(tokenNombre.lexema, tipoDato!!.tipo,modificable,ambito,tokenNombre.fila,tokenNombre.columna)
-    }
-
-    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String){
-
-        if(tokenIDAsignado!=null){
-
-            val simbolo = tablaSimbolos.buscarSimboloVariable(tokenIDAsignado!!.lexema, ambito)
-
-            if(simbolo==null){
-                tablaSimbolos.listaErrores.add(Error("Variable no existente",tokenIDAsignado!!.fila , tokenIDAsignado!!.columna))
-            }
-
-
-        }else if(invocacionFuncion!=null){
-                invocacionFuncion!!.analizarSemantica(tablaSimbolos,ambito)
-
-        }else if(expresion!=null){
-                expresion!!.analizarSemantica(tablaSimbolos,ambito)
-
-        }
-
     }
 
 

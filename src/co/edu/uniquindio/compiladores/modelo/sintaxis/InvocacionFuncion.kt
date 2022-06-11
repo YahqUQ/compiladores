@@ -1,26 +1,22 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.lexico.Token
-import co.edu.uniquindio.compiladores.modelo.semantica.Simbolo
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
-import co.edu.uniquindio.compiladores.modelo.lexico.Error
 import javafx.scene.control.TreeItem
 
 class InvocacionFuncion : Sentencia {
 
-    var tokenId: Token
+    var id:String
     var listaArgumentos:ArrayList<Argumento>
 
-    constructor(nombre:Token,listaArgumentos:ArrayList<Argumento>){
-        this.tokenId=nombre
+    constructor(nombre:String,listaArgumentos:ArrayList<Argumento>){
+        this.id=nombre
         this.listaArgumentos=listaArgumentos
     }
 
     override fun getArbolVisual(): TreeItem<String> {
         var raiz= TreeItem("Invocación Función")
 
-        if (tokenId!=null){
-            raiz.children.add(TreeItem("id Funcion: "+tokenId.lexema))
+        if (id!=null){
+            raiz.children.add(TreeItem("id Funcion: "+id))
 
         }
 
@@ -34,42 +30,6 @@ class InvocacionFuncion : Sentencia {
         }
 
         return raiz
-    }
-
-    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-        var listaTipoArgumentos: ArrayList<String>? = null
-
-        for(argumento:Argumento in listaArgumentos){
-
-            var tipoArgumento: String? = null
-            if(argumento.id!=null){
-                var simbolo: Simbolo? = tablaSimbolos.buscarSimboloVariable(argumento.id!!,ambito)
-
-                if(simbolo!=null){
-                    tipoArgumento= simbolo!!.tipo
-                }else{
-                    tablaSimbolos.listaErrores.add(Error("No existe el argumento "+argumento.id,tokenId))
-                }
-
-            }else{
-               tipoArgumento= if(argumento.expresion is ExpresionRelacional) "BOOLEAN" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionLogica) "BOOLEAN" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionArtimetica) "NUMBER_Z" else ""
-                tipoArgumento= if(argumento.expresion is ExpresionCadena) "STRING" else ""
-
-            }
-
-            listaTipoArgumentos!!.add(tipoArgumento!!)
-
-        }
-
-        var invFuncion = tablaSimbolos.buscarSimboloFuncion(tokenId.lexema, listaTipoArgumentos!!)
-
-        if(invFuncion==null){
-            tablaSimbolos.listaErrores.add(Error("No existe la función "+tokenId.lexema+listaTipoArgumentos,tokenId))
-        }
-
     }
 
 }

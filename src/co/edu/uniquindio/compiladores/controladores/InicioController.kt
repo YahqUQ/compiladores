@@ -3,7 +3,6 @@ package co.edu.uniquindio.compiladores.controladores
 import co.edu.uniquindio.compiladores.modelo.lexico.AnalizadorLexico
 import co.edu.uniquindio.compiladores.modelo.lexico.Error
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
-import co.edu.uniquindio.compiladores.modelo.semantica.AnalizadorSemantico
 import co.edu.uniquindio.compiladores.modelo.sintaxis.AnalizadorSintactico
 import javafx.collections.FXCollections
 import javafx.event.ActionEvent
@@ -116,32 +115,14 @@ class InicioController : Initializable {
 
                 if (uniCompilacion != null) {
                    arbolSintactico.root = uniCompilacion.getArbolVisual()
-
-                    println("---------")
-
-                    var semantico= AnalizadorSemantico(uniCompilacion)
-                    semantico.llenarTablaSimbolos()
-                    semantico.analizarSemantica()
-
-                    for (s in semantico.tablaSimbolos.listaSimbolos) {
-                        println(s)
-                    }
-
-                    for (e in semantico.tablaSimbolos.listaErrores) {
-                        println(e)
-                    }
-
-
                 }else{
                     arbolSintactico.root= TreeItem("Unidad de Compilación")
-                    var al: Alert = Alert(Alert.AlertType.ERROR,"Hay errores , Revise las tablas")
-                    al.showAndWait()
                 }
 
 
 
             }catch (exception: Exception){
-                var al: Alert = Alert(Alert.AlertType.ERROR,"Hay errores , Revise las tablas")
+                var al: Alert = Alert(Alert.AlertType.ERROR,"Hay errores , Revise la tabla")
                 al.showAndWait()
             }
 

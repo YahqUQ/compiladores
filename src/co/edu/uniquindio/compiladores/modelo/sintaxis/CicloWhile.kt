@@ -1,7 +1,5 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.semantica.Simbolo
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class CicloWhile : Sentencia {
@@ -46,19 +44,4 @@ class CicloWhile : Sentencia {
         }
         return raiz
     }
-
-    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
-        for(sentencia:Sentencia in listaSentencias){
-            sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"While:"+condicionL!!+condicionR!!+"/")
-        }
-    }
-
-    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-        for(sentencia:Sentencia in listaSentencias){
-            sentencia.analizarSemantica(tablaSimbolos,ambito+"While:"+condicionL!!+condicionR!!+"/")
-        }
-    }
-
-
 }

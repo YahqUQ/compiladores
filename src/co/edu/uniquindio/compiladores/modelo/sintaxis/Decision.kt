@@ -1,6 +1,5 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class Decision : Sentencia {
@@ -72,17 +71,6 @@ class Decision : Sentencia {
 
 
         return raiz
-    }
-
-    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-    }
-
-    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
-
-        for(sentencia:Sentencia in listaSentenciaIF!!){
-            sentencia.llenarTablaSimbolos(tablaSimbolos,ambito+"IF:"+condicionL!!+condicionR+"/")
-        }
     }
 
 
