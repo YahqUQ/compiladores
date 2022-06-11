@@ -1,6 +1,5 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class UnidadDeCompilacion {
@@ -19,15 +18,6 @@ class UnidadDeCompilacion {
         return raiz
     }
 
-    fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo) {
-        for (e in listaElementos) {
-            e.llenarTablaSimbolos(tablaSimbolos)
-        }
-    }
-    fun analizarSemantica(tablaSimbolos: TablaSimbolo) {
-        for (e in listaElementos) {
-            e.analizarSemantica(tablaSimbolos)
-        }
-    }
+
 
 }

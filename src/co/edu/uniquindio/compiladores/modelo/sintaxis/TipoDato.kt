@@ -1,7 +1,6 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
 import co.edu.uniquindio.compiladores.modelo.lexico.Token
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class TipoDato {
@@ -23,6 +22,5 @@ class TipoDato {
 
         return raiz
     }
-
 
 }
