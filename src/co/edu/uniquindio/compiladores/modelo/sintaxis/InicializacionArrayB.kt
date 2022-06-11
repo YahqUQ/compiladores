@@ -1,6 +1,5 @@
 package co.edu.uniquindio.compiladores.modelo.sintaxis
 
-import co.edu.uniquindio.compiladores.modelo.semantica.TablaSimbolo
 import javafx.scene.control.TreeItem
 
 class InicializacionArrayB : Sentencia {
@@ -46,13 +45,5 @@ class InicializacionArrayB : Sentencia {
             }
         }
         return raiz
-    }
-
-    override fun analizarSemantica(tablaSimbolos: TablaSimbolo, ambito: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun llenarTablaSimbolos(tablaSimbolos: TablaSimbolo, ambito: String) {
-        TODO("Not yet implemented")
     }
 }
